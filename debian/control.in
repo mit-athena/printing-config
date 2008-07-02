@@ -1,0 +1,16 @@
+Source: debathena-printing-config
+Section: debathena-config/net
+Priority: extra
+Maintainer: Debian-Athena Project <debathena@mit.edu>
+Build-Depends: @cdbs@
+Standards-Version: 3.7.2
+
+Package: debathena-printing-config
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, debathena-cupsys-config, debathena-hesiod-config, debathena-lprng-config, debathena-lprng, cupsys-bsd, python
+Provides: ${diverted-files}
+Conflicts: ${diverted-files}
+Description: Printing configuration for Debian-Athena
+ This package configures both graphical and command-line printing in a way that
+ is compatible with the traditional Athena printing infrastructure and eases
+ the transition to CUPS-based printing.

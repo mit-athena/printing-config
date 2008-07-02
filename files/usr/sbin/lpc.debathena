@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ "$1" = "--cups" ]
+then
+    shift
+    exec /usr/sbin/lpc.debathena-orig "$@"
+elif [ "$1" = "--lprng" ]
+then
+    shift
+else
+    echo "You did not specify --lprng or --cups. Defaulting to --lprng."
+fi
+
+exec /usr/sbin/mit-lpc "$@"

@@ -1,0 +1,25 @@
+#!/usr/bin/make -f
+
+DEB_AUTO_UPDATE_DEBIAN_CONTROL = 1
+DEB_DIVERT_EXTENSION = .debathena
+
+DEB_DIVERT_FILES_debathena-printing-config += \
+	/usr/bin/cancel.debathena \
+	/usr/bin/lp.debathena \
+	/usr/bin/lpq.debathena \
+	/usr/bin/lpr.debathena \
+	/usr/bin/lprm.debathena \
+	/usr/sbin/lpc.debathena \
+	\
+	/usr/share/man/man1/cancel.debathena.1.gz \
+	/usr/share/man/man1/lp.debathena.1.gz \
+	/usr/share/man/man1/lpq.debathena.1.gz \
+	/usr/share/man/man1/lpr.debathena.1.gz \
+	/usr/share/man/man1/lprm.debathena.1.gz \
+	/usr/share/man/man8/lpc.debathena.8.gz
+# I honestly don't know of anyone who uses lpstat. If someone complains, I'll
+# try to make it work
+#	/usr/bin/lpstat.debathena
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/rules/config-package.mk

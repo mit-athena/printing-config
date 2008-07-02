@@ -1,0 +1,32 @@
+.TH lpr 1 Debathena "July 2008" "Athena Printing"
+.SH NAME
+lpr \- print to Athena printers
+.SH SYNOPSIS
+.B lpr
+.RB [ \-P printer]
+[other options] [filename]
+.SH DESCRIPTION
+Debathena supports two printing systems: LPRng, the current Athena printing
+architecture, and CUPS, a system with better cross-platform support slated for
+use in Athena 10. This command is a script which detects if you are printing to
+an LPRng or CUPS printer, and runs the appropriate version of lpr.
+.PP
+See the
+.BR mit-lpr (1)
+man page for the LPRng version of lpr, or the
+.BR cups-lpr (1)
+man page for the CUPS version of lpr.
+.SH OPTIONS
+.TP
+.BR \-P printer
+Specifies the printer to use, which determines which lpr version to use. If not specified, it will default to the value of the PRINTER environment variable.
+.PP
+All other options are passed on to the final lpr command.
+.SH FILES
+/etc/debathena-printing.conf
+.SH AUTHOR
+Evan Broder, SIPB Debathena <debathena@mit.edu>.
+.SH SEE ALSO
+.BR mit-lpr (1),
+.BR cups-lpr (1),
+.BR debathena-printing.conf (5)

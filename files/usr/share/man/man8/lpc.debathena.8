@@ -1,0 +1,42 @@
+.TH lpc 8 Debathena "July 2008" "Athena Printing"
+.SH NAME
+lpc \- manage Athena printers
+.SH SYNOPSIS
+.B lpc
+.RB [ \-\-cups | \-\-lprng ]
+[other options]
+.SH DESCRIPTION
+Debathena supports two printing systems: LPRng, the current Athena printing
+architecture, and CUPS, a system with better cross-platform support slated for
+use in Athena 10.
+.PP
+This command is a script which executes either the LPRng or the CUPS version
+of
+.BR lpc (8)
+based on the argument passed to it. If no argument is provided, the script
+defaults to LPRng
+.BR lpc (8).
+.PP
+See the
+.BR mit-lpc (8)
+man page for the LPRng version of lpc, or the
+.BR cups-lpc (8)
+man page for the CUPS version of lpc.
+.SH OPTIONS
+.TP
+.BR \-\-cups
+Specifies that the CUPS version of
+.BR lpc (8)
+should be used
+.TP
+.BR \-\-lprng
+Specifies that the LPRng version of
+.BR lpc (8)
+should be used
+.PP
+All other options are passed on to the final lpc command.
+.SH AUTHOR
+Evan Broder, SIPB Debathena <debathena@mit.edu>.
+.SH SEE ALSO
+.BR mit-lpc (8),
+.BR cups-lpc (8)

@@ -1,0 +1,32 @@
+.TH lpq 1 Debathena "July 2008" "Athena Printing"
+.SH NAME
+lpq \- show Athena printer queue status
+.SH SYNOPSIS
+.B lpq
+.RB [ \-P printer]
+[other options]
+.SH DESCRIPTION
+Debathena supports two printing systems: LPRng, the current Athena printing
+architecture, and CUPS, a system with better cross-platform support slated for
+use in Athena 10. This command is a script which detects if you are printing to
+an LPRng or CUPS printer, and runs the appropriate version of lpq.
+.PP
+See the
+.BR mit-lpq (1)
+man page for the LPRng version of lpq, or the
+.BR cups-lpq (1)
+man page for the CUPS version of lpq.
+.SH OPTIONS
+.TP
+.BR \-P printer
+Specifies the printer to use, which determines which lpq version to use. If not specified, it will default to the value of the PRINTER environment variable.
+.PP
+All other options are passed on to the final lpq command.
+.SH FILES
+/etc/debathena-printing.conf
+.SH AUTHOR
+Evan Broder, SIPB Debathena <debathena@mit.edu>.
+.SH SEE ALSO
+.BR mit-lpq (1),
+.BR cups-lpq (1),
+.BR debathena-printing.conf (5)

@@ -1,0 +1,108 @@
+#!/usr/bin/python
+
+# lpr.debathena
+#
+# also lp.debathena, lpq.debathena, and lprm.debathena
+#
+# Wrapper script that intelligently determines whether a command was
+# intended for should go to CUPS or LPRng and sends it off in the
+# right direction
+
+import getopt
+import os
+import sys
+from subprocess import call, PIPE
+
+opts = {
+    'cancel': 'aD:Eh:P:U:u:',
+    'lp': 'ABcd:D:Ef:Gh:H:i:mn:o:pP:q:rsS:t:T:U:wX:y:',
+    'lpq': 'aAD:Eh:lLP:st:U:V',
+    'lpr': '#:1:2:3:4:AbBC:D:EF:GhH:i:J:kK:lmo:pP:qrR:sT:U:Vw:X:YZ:',
+    'lprm': 'aAD:Eh:lLP:st:U:V'
+}
+
+def error(code, message):
+    """Exit out with an error
+    """
+    sys.stderr.write(message)
+    sys.exit(code)
+
+def run(name, command, rargs):
+    """Given a path to a command and the rest of the arguments, exec it
+    """
+    os.execv(command, [name] + rargs)
+
+def returnCode(*command):
+    """Get the return code of a command and throw away the output
+    """
+    return call(command, stdout=PIPE, stderr=PIPE)
+
+def cupsQueueExists(queue):
+    """Test if queue name exists as a CUPS queue
+    """
+    return returnCode('/usr/bin/lpq.debathena-orig', '-P%s' % queue) == 0
+
+def lprngQueueExists(queue):
+    """Test if queue name exists as an LPRng queue
+    """
+    return returnCode('/usr/bin/hesinfo', queue, 'pcap') == 0
+
+def useCups(command, queue, args):
+    """If queue exists as a CUPS queue, pass the command and arguments on to the
+    CUPS versions of the command
+    """
+    if queue == None or cupsQueueExists(queue) or not lprngQueueExists(queue):
+        new_command = '/usr/bin/%s.debathena-orig' % command
+        run(command, new_command, args)
+
+def useLprng(command, queue, args):
+    """If queue exists as an LPRng queue, pass the command and arguments on to
+    the LPRng versions of the command
+    """
+    if queue == None or lprngQueueExists(queue) or not lprngQueueExists(queue):
+        new_command = '/usr/bin/mit-%s' % command
+        run(command, new_command, args)
+
+def getPrintQueue(command, args):
+    """Given argv, extract the printer name, using knowledge of the possible
+    command line options for both the CUPS and LPRng versions of the command
+    that this script was called as.
+    """
+    try:
+        # Get the set of options that correspond to the command that this
+        # script was invoked as
+        cmd_opts = opts[command]
+        options, args = getopt.gnu_getopt(args, cmd_opts)
+        for o, a in options:
+            if o == '-P':
+                return a
+        if command == 'cancel' and len(args) > 0:
+            return args[0]
+    # This script was invoked with argv[0] set to something it doesn't know
+    # about
+    except KeyError:
+        error(1, """
+Error: this script was called as %s, when it must be called as
+one of lpr, lpq, lprm, lp, or cancel
+
+""" % command)
+
+if __name__ == '__main__':
+    # Remove the command name from the arguments when we extract it
+    command = os.path.basename(sys.argv.pop(0))
+    queue = getPrintQueue(command, sys.argv)
+    # Figure out whether to prefer LPRng or CUPS. If we can't decide based on
+    # the config file, then we're going with CUPS
+    try:
+        # Ok, yeah, the lower might be going a little overboard, but I don't
+        # like giving users room to screw things up :)
+        preference = open('/etc/debathena-printing.conf').read().\
+            strip().lower()
+    except IOError:
+        preference = 'cups'
+    
+    fns = {'cups': [useCups, useLprng],
+           'lprng': [useLprng, useCups]}
+    fn_args = [command, queue, sys.argv]
+    for fn in fns[preference]:
+        fn(*fn_args)

@@ -1,0 +1,13 @@
+usr/bin/cancel.debathena-orig usr/bin/cups-cancel
+usr/bin/lpr.debathena-orig usr/bin/cups-lpr
+usr/bin/lpq.debathena-orig usr/bin/cups-lpq
+usr/bin/lprm.debathena-orig usr/bin/cups-lprm
+usr/bin/lp.debathena-orig usr/bin/cups-lp
+usr/sbin/lpc.debathena-orig usr/bin/cups-lpc
+
+usr/share/man/man1/cancel.debathena-orig.1.gz usr/share/man/man1/cups-cancel.1.gz
+usr/share/man/man1/lpr.debathena-orig.1.gz usr/share/man/man1/cups-lpr.1.gz
+usr/share/man/man1/lpq.debathena-orig.1.gz usr/share/man/man1/cups-lpq.1.gz
+usr/share/man/man1/lprm.debathena-orig.1.gz usr/share/man/man1/cups-lprm.1.gz
+usr/share/man/man1/lp.debathena-orig.1.gz usr/share/man/man1/cups-lp.1.gz
+usr/share/man/man8/lpc.debathena-orig.8.gz usr/share/man/man8/cups-lpc.8.gz
