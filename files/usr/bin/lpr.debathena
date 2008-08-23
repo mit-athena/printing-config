@@ -8,6 +8,8 @@
 # intended for should go to CUPS or LPRng and sends it off in the
 # right direction
 
+import errno
+import hesiod
 import getopt
 import os
 import sys
@@ -45,7 +47,14 @@ def cupsQueueExists(queue):
 def lprngQueueExists(queue):
     """Test if queue name exists as an LPRng queue
     """
-    return returnCode('/usr/bin/hesinfo', queue, 'pcap') == 0
+    try:
+        h = hesiod.Lookup(queue, 'pcap')
+        return len(h.results) > 0
+    except IOError, e:
+        if e.errno in (errno.ENOENT, errno.EMSGSIZE):
+            return None
+        else:
+            raise
 
 def useCups(command, queue, args):
     """If queue exists as a CUPS queue, pass the command and arguments on to the
@@ -86,6 +95,20 @@ Error: this script was called as %s, when it must be called as
 one of lpr, lpq, lprm, lp, or cancel
 
 """ % command)
+    default = os.getenv('PRINTER')
+    if default:
+        return default
+    try:
+        h = hesiod.Lookup(os.uname()[1], 'cluster')
+        for result in h.results:
+            (key, value) = result.split(None, 1)
+            if key == 'lpr':
+                return value
+    except IOError, e:
+        if e.errno in (errno.ENOENT, errno.EMSGSIZE):
+            pass
+        else:
+            raise
 
 if __name__ == '__main__':
     # Remove the command name from the arguments when we extract it

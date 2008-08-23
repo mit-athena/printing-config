@@ -1,3 +1,10 @@
+debathena-printing-config (1.2) unstable; urgency=low
+
+  * Add awareness of the default printer, specified by the PRINTER environment
+    variable or via Hesiod cluster information.
+
+ -- Geoffrey Thomas <geofft@mit.edu>  Sat, 23 Aug 2008 00:30:32 -0400
+
 debathena-printing-config (1.1) unstable; urgency=low
 
   * Handle rename of cupsys to cups in Debian sid.
