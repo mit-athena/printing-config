@@ -1,3 +1,12 @@
+debathena-printing-config (1.3) unstable; urgency=low
+
+  * Remove DEB_AUTO_UPDATE_DEBIAN_CONTROL.
+  * Change "Debian-Athena Project" to "Debathena Project".
+  * Remove debian/control from version control.
+  * Clean up debian/copyright.
+
+ -- Tim Abbott <tabbott@mit.edu>  Sat, 24 Jan 2009 16:25:03 -0500
+
 debathena-printing-config (1.2) unstable; urgency=low
 
   * Add awareness of the default printer, specified by the PRINTER environment
