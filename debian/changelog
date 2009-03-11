@@ -1,8 +1,8 @@
 debathena-printing-config (1.5) unstable; urgency=low
 
-  * Permit more options: lpr's -z (zephyr) and lpq's -v (verbose).
+  * Permit lpq's -v (verbose).
 
- -- Geoffrey Thomas <geofft@mit.edu>  Wed, 11 Mar 2009 00:22:06 -0400
+ -- Geoffrey Thomas <geofft@mit.edu>  Wed, 11 Mar 2009 01:07:57 -0400
 
 debathena-printing-config (1.4) unstable; urgency=low
 

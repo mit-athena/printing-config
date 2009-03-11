@@ -19,7 +19,7 @@ opts = {
     'cancel': 'aD:Eh:P:U:u:',
     'lp': 'ABcd:D:Ef:Gh:H:i:mn:o:pP:q:rsS:t:T:U:wX:y:',
     'lpq': 'aAD:Eh:lLP:st:U:Vv',
-    'lpr': '#:1:2:3:4:AbBC:D:EF:GhH:i:J:kK:lmo:pP:qrR:sT:U:Vw:X:YzZ:',
+    'lpr': '#:1:2:3:4:AbBC:D:EF:GhH:i:J:kK:lmo:pP:qrR:sT:U:Vw:X:YZ:',
     'lprm': 'aAD:Eh:lLP:st:U:V'
 }
 
