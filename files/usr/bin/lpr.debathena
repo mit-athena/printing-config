@@ -68,7 +68,7 @@ def useLprng(command, queue, args):
     """If queue exists as an LPRng queue, pass the command and arguments on to
     the LPRng versions of the command
     """
-    if queue == None or lprngQueueExists(queue) or not lprngQueueExists(queue):
+    if queue == None or lprngQueueExists(queue) or not cupsQueueExists(queue):
         new_command = '/usr/bin/mit-%s' % command
         run(command, new_command, args)
 
