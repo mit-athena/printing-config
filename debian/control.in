@@ -7,7 +7,7 @@ Standards-Version: 3.7.2
 
 Package: debathena-printing-config
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, debathena-cupsys-config, debathena-hesiod-config, debathena-lprng-config, debathena-lprng, cups-bsd | cupsys-bsd, python
+Depends: ${shlibs:Depends}, ${misc:Depends}, debathena-cupsys-config, debathena-hesiod-config, debathena-lprng-config, debathena-lprng, cups-bsd | cupsys-bsd, python, python-hesiod
 Provides: ${diverted-files}
 Conflicts: ${diverted-files}
 Description: Printing configuration for Debathena
