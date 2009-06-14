@@ -1,3 +1,10 @@
+debathena-printing-config (1.7) unstable; urgency=low
+
+  * If the arguments to a printing command imply a desire for a particular
+    version of that command (CUPS or LPRng), use that version. (Trac: #251)
+
+ -- Geoffrey Thomas <geofft@mit.edu>  Sat, 13 Jun 2009 22:52:24 -0400
+
 debathena-printing-config (1.6) unstable; urgency=low
 
   * Add missing dependency on python-hesiod. (Trac: #204)

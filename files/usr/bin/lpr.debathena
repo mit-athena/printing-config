@@ -16,11 +16,25 @@ import sys
 from subprocess import call, PIPE
 
 opts = {
-    'cancel': 'aD:Eh:P:U:u:',
-    'lp': 'ABcd:D:Ef:Gh:H:i:mn:o:pP:q:rsS:t:T:U:wX:y:',
-    'lpq': 'aAD:Eh:lLP:st:U:Vv',
-    'lpr': '#:1:2:3:4:AbBC:D:EF:GhH:i:J:kK:lmo:pP:qrR:sT:U:Vw:X:YZ:',
-    'lprm': 'aAD:Eh:lLP:st:U:V'
+    'cups': {
+        'cancel': 'EU:ah:u:',
+        'lp': 'EU:cd:h:mn:o:q:st:H:P:i:',
+        'lpq': 'EU:h:P:al',
+        'lpr': 'EH:U:P:#:hlmo:pqrC:J:T:',
+        'lprm': 'EU:h:P:'
+    },
+    'lprng': {
+        'cancel': 'aAD:P:VU:',
+        'lp': 'ckmprswBGYd:D:f:n:q:t:',
+        'lpq': 'aAlLVcvP:st:D:',
+        'lpr': 'ABblC:D:F:Ghi:kJ:K:#:m:P:rR:sT:U:Vw:X:YZ:1:2:3:4:',
+        'lprm': 'aAD:P:VU:'
+    }
+}
+
+preflist = {
+    'cups': ['cups', 'lprng'],
+    'lprng': ['lprng', 'cups']
 }
 
 def error(code, message):
@@ -72,48 +86,63 @@ def useLprng(command, queue, args):
         new_command = '/usr/bin/mit-%s' % command
         run(command, new_command, args)
 
-def getPrintQueue(command, args):
+def getPrintQueue(command, args, preference):
     """Given argv, extract the printer name, using knowledge of the possible
     command line options for both the CUPS and LPRng versions of the command
-    that this script was called as.
+    that this script was called as. Also, return whether the command line
+    options imply a particular version of the command.
     """
-    try:
-        # Get the set of options that correspond to the command that this
-        # script was invoked as
-        cmd_opts = opts[command]
-        options, args = getopt.gnu_getopt(args, cmd_opts)
-        for o, a in options:
-            if o == '-P':
-                return a
-        if command == 'cancel' and len(args) > 0:
-            return args[0]
-    # This script was invoked with argv[0] set to something it doesn't know
-    # about
-    except KeyError:
-        error(1, """
+    for version in preflist[preference]:
+        try:
+            # Get the set of options that correspond to the command that this
+            # script was invoked as
+            cmd_opts = opts[version][command]
+        except KeyError:
+            error(1, """
 Error: this script was called as %s, when it must be called as
 one of lpr, lpq, lprm, lp, or cancel
 
 """ % command)
+
+        # Attempt to parse it with the current version of this command
+        try:
+            options, args = getopt.gnu_getopt(args, cmd_opts)
+        except getopt.GetoptError:
+            # That's the wrong version, so try the next one.
+            continue
+
+        for o, a in options:
+            if o == '-P':
+                return (version, a)
+        if command == 'cancel' and len(args) > 0:
+            return (version, args[0])
+        # Since we've successfully getopt'd, don't try any other versions,
+        # but do note that we like this version.
+        preference = version
+        break
+
+    # This script was invoked with argv[0] set to something it doesn't know
+    # about. In that case, use our preferred version.
     default = os.getenv('PRINTER')
     if default:
-        return default
+        return (preference, default)
     try:
         h = hesiod.Lookup(os.uname()[1], 'cluster')
         for result in h.results:
             (key, value) = result.split(None, 1)
             if key == 'lpr':
-                return value
+                return (preference, value)
     except IOError, e:
         if e.errno in (errno.ENOENT, errno.EMSGSIZE):
             pass
         else:
             raise
 
+    return (preference, None)
+
 if __name__ == '__main__':
     # Remove the command name from the arguments when we extract it
     command = os.path.basename(sys.argv.pop(0))
-    queue = getPrintQueue(command, sys.argv)
     # Figure out whether to prefer LPRng or CUPS. If we can't decide based on
     # the config file, then we're going with CUPS
     try:
@@ -123,7 +152,11 @@ if __name__ == '__main__':
             strip().lower()
     except IOError:
         preference = 'cups'
-    
+
+    # Determine if the arguments prefer one version of this command,
+    # For instance, "lpq -h cups.csail -P xerox5" wants cups-lpq
+    (preference, queue) = getPrintQueue(command, sys.argv, preference)
+
     fns = {'cups': [useCups, useLprng],
            'lprng': [useLprng, useCups]}
     fn_args = [command, queue, sys.argv]
