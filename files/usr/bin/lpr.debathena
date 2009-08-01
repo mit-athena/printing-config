@@ -15,20 +15,28 @@ import os
 import sys
 from subprocess import call, PIPE
 
+def zephyr_transform(options):
+    def helper(o, a):
+        if o == '-z':
+            return ('-m', 'zephyr%' + os.environ['ATHENA_USER'])
+        return (o, a)
+
+    return [helper(o, a) for o, a in options]
+
 opts = {
     'cups': {
-        'cancel': 'EU:ah:u:',
-        'lp': 'EU:cd:h:mn:o:q:st:H:P:i:',
-        'lpq': 'EU:h:P:al',
-        'lpr': 'EH:U:P:#:hlmo:pqrC:J:T:',
-        'lprm': 'EU:h:P:'
+        'cancel': ('EU:ah:u:', None),
+        'lp': ('EU:cd:h:mn:o:q:st:H:P:i:', None),
+        'lpq': ('EU:h:P:al', None),
+        'lpr': ('EH:U:P:#:hlmo:pqrC:J:T:', None),
+        'lprm': ('EU:h:P:', None),
     },
     'lprng': {
-        'cancel': 'aAD:P:VU:',
-        'lp': 'ckmprswBGYd:D:f:n:q:t:',
-        'lpq': 'aAlLVcvP:st:D:',
-        'lpr': 'ABblC:D:F:Ghi:kJ:K:#:m:P:rR:sT:U:Vw:X:YZ:1:2:3:4:',
-        'lprm': 'aAD:P:VU:'
+        'cancel': ('aAD:P:VU:', None),
+        'lp': ('ckmprswBGYd:D:f:n:q:t:', None),
+        'lpq': ('aAlLVcvP:st:D:', None),
+        'lpr': ('ABblC:D:F:Ghi:kJ:K:#:m:P:rR:sT:U:Vw:X:YZ:z1:2:3:4:', zephyr_transform),
+        'lprm': ('aAD:P:VU:', None),
     }
 }
 
@@ -96,7 +104,7 @@ def getPrintQueue(command, args, preference):
         try:
             # Get the set of options that correspond to the command that this
             # script was invoked as
-            cmd_opts = opts[version][command]
+            (cmd_opts, transform_opts) = opts[version][command]
         except KeyError:
             error(1, """
 Error: this script was called as %s, when it must be called as
@@ -106,16 +114,19 @@ one of lpr, lpq, lprm, lp, or cancel
 
         # Attempt to parse it with the current version of this command
         try:
-            options, args = getopt.gnu_getopt(args, cmd_opts)
+            options, realargs = getopt.gnu_getopt(args, cmd_opts)
         except getopt.GetoptError:
             # That's the wrong version, so try the next one.
             continue
 
+        if transform_opts:
+            options = transform_opts(options)
+        args = [o + a for o, a in options] + realargs
         for o, a in options:
             if o == '-P':
-                return (version, a)
-        if command == 'cancel' and len(args) > 0:
-            return (version, args[0])
+                return (version, a, args)
+        if command == 'cancel' and len(realargs) > 0:
+            return (version, realargs[0], args)
         # Since we've successfully getopt'd, don't try any other versions,
         # but do note that we like this version.
         preference = version
@@ -125,20 +136,20 @@ one of lpr, lpq, lprm, lp, or cancel
     # about. In that case, use our preferred version.
     default = os.getenv('PRINTER')
     if default:
-        return (preference, default)
+        return (preference, default, args)
     try:
         h = hesiod.Lookup(os.uname()[1], 'cluster')
         for result in h.results:
             (key, value) = result.split(None, 1)
             if key == 'lpr':
-                return (preference, value)
+                return (preference, value, args)
     except IOError, e:
         if e.errno in (errno.ENOENT, errno.EMSGSIZE):
             pass
         else:
             raise
 
-    return (preference, None)
+    return (preference, None, args)
 
 if __name__ == '__main__':
     # Remove the command name from the arguments when we extract it
@@ -155,10 +166,10 @@ if __name__ == '__main__':
 
     # Determine if the arguments prefer one version of this command,
     # For instance, "lpq -h cups.csail -P xerox5" wants cups-lpq
-    (preference, queue) = getPrintQueue(command, sys.argv, preference)
+    (preference, queue, args) = getPrintQueue(command, sys.argv, preference)
 
     fns = {'cups': [useCups, useLprng],
            'lprng': [useLprng, useCups]}
-    fn_args = [command, queue, sys.argv]
+    fn_args = [command, queue, args]
     for fn in fns[preference]:
         fn(*fn_args)

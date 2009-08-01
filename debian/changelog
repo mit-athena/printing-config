@@ -1,3 +1,10 @@
+debathena-printing-config (1.8) unstable; urgency=low
+
+  * Add support for lpr -z for LPRng in the wrapper, by turning it into
+    -m zephyr%$ATHENA_USER (Trac: #138).
+
+ -- Geoffrey Thomas <geofft@mit.edu>  Fri, 31 Jul 2009 23:50:42 -0400
+
 debathena-printing-config (1.7) unstable; urgency=low
 
   * If the arguments to a printing command imply a desire for a particular
