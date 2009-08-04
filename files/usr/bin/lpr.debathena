@@ -12,12 +12,18 @@ import errno
 import hesiod
 import getopt
 import os
+import shlex
 import sys
 from subprocess import call, PIPE
 
+def lpropt_transform(args):
+    if 'LPROPT' in os.environ:
+        args[1:1] = shlex.split(os.environ['LPROPT'])
+    return args
+
 def zephyr_transform(options):
     def helper(o, a):
-        if o == '-z':
+        if o == '-z' and 'ATHENA_USER' in os.environ:
             return ('-m', 'zephyr%' + os.environ['ATHENA_USER'])
         return (o, a)
 
@@ -35,7 +41,8 @@ opts = {
         'cancel': ('aAD:P:VU:', None),
         'lp': ('ckmprswBGYd:D:f:n:q:t:', None),
         'lpq': ('aAlLVcvP:st:D:', None),
-        'lpr': ('ABblC:D:F:Ghi:kJ:K:#:m:P:rR:sT:U:Vw:X:YZ:z1:2:3:4:', zephyr_transform),
+        'lpr': ('ABblC:D:F:Ghi:kJ:K:#:m:P:rR:sT:U:Vw:X:YZ:z1:2:3:4:',
+            (lpropt_transform, zephyr_transform)),
         'lprm': ('aAD:P:VU:', None),
     }
 }
@@ -104,7 +111,11 @@ def getPrintQueue(command, args, preference):
         try:
             # Get the set of options that correspond to the command that this
             # script was invoked as
-            (cmd_opts, transform_opts) = opts[version][command]
+            (cmd_opts, transformers) = opts[version][command]
+            if transformers:
+                (transform_args, transform_opts) = transformers
+            else:
+                (transform_args, transform_opts) = (None, None)
         except KeyError:
             error(1, """
 Error: this script was called as %s, when it must be called as
@@ -113,6 +124,8 @@ one of lpr, lpq, lprm, lp, or cancel
 """ % command)
 
         # Attempt to parse it with the current version of this command
+        if transform_args:
+            args = transform_args(args)
         try:
             options, realargs = getopt.gnu_getopt(args, cmd_opts)
         except getopt.GetoptError:

@@ -1,3 +1,11 @@
+debathena-printing-config (1.9) unstable; urgency=low
+
+  * Support LPROPT for LPRng lpr (Trac: #285).
+  * Be a little more robust if ATHENA_USER doesn't exist for some
+    strange reason.
+
+ -- Geoffrey Thomas <geofft@mit.edu>  Tue, 04 Aug 2009 16:58:45 -0400
+
 debathena-printing-config (1.8) unstable; urgency=low
 
   * Add support for lpr -z for LPRng in the wrapper, by turning it into
