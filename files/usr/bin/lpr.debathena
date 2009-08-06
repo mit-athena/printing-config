@@ -22,12 +22,18 @@ def lpropt_transform(args):
     return args
 
 def zephyr_transform(options):
-    def helper(o, a):
-        if o == '-z' and 'ATHENA_USER' in os.environ:
-            return ('-m', 'zephyr%' + os.environ['ATHENA_USER'])
-        return (o, a)
+    zephyr = True
+    return_options = []
+    for o, a in options:
+        if o == '-z':
+            zephyr = not zephyr
+        else:
+            return_options.append((o, a))
 
-    return [helper(o, a) for o, a in options]
+    if zephyr and os.environ.get('ATHENA_USER'):
+        return_options.append(('-m', 'zephyr%' + os.environ['ATHENA_USER']))
+
+    return return_options
 
 opts = {
     'cups': {
