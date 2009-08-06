@@ -22,3 +22,6 @@ DEB_DIVERT_FILES_debathena-printing-config += \
 
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/rules/config-package.mk
+
+build/debathena-printing-config::
+	msgfmt -o system-config-printer.mo system-config-printer.po

@@ -1,3 +1,13 @@
+debathena-printing-config (1.10) unstable; urgency=low
+
+  * If you're using system-config-printer with notification popups,
+    notify that the job was sent to the printer rather than that it was
+    successfully printed, since that's not necessarily true for remote
+    printers (Trac: #281).
+    See also https://fedorahosted.org/system-config-printer/ticket/181
+
+ -- Geoffrey Thomas <geofft@mit.edu>  Thu, 06 Aug 2009 02:35:16 -0400
+
 debathena-printing-config (1.9) unstable; urgency=low
 
   * Support LPROPT for LPRng lpr (Trac: #285).

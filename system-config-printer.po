@@ -1,0 +1,2 @@
+msgid "Document `%s' has finished printing on `%s'."
+msgstr "Document `%s' has been sent to `%s' for printing."
