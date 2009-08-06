@@ -2,7 +2,7 @@ Source: debathena-printing-config
 Section: debathena-config/net
 Priority: extra
 Maintainer: Debathena Project <debathena@mit.edu>
-Build-Depends: @cdbs@
+Build-Depends: @cdbs@, gettext
 Standards-Version: 3.7.2
 
 Package: debathena-printing-config
