@@ -1,4 +1,4 @@
-debathena-printing-config (1.12) jaunty; urgency=low
+debathena-printing-config (1.12) unstable; urgency=low
 
   * Insert LPROPT at the beginning of the options, rather than after the
     first option (which may accidentally split an option and its arguments).
