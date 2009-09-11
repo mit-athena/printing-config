@@ -18,7 +18,7 @@ from subprocess import call, PIPE
 
 def lpropt_transform(args):
     if 'LPROPT' in os.environ:
-        args[1:1] = shlex.split(os.environ['LPROPT'])
+        return shlex.split(os.environ['LPROPT']) + args
     return args
 
 def zephyr_transform(options):
@@ -121,7 +121,7 @@ def getPrintQueue(command, args, preference):
             if transformers:
                 (transform_args, transform_opts) = transformers
             else:
-                (transform_args, transform_opts) = (None, None)
+                transform_args = transform_opts = lambda x: x
         except KeyError:
             error(1, """
 Error: this script was called as %s, when it must be called as
@@ -130,22 +130,20 @@ one of lpr, lpq, lprm, lp, or cancel
 """ % command)
 
         # Attempt to parse it with the current version of this command
-        if transform_args:
-            args = transform_args(args)
+        targs = transform_args(args)
         try:
-            options, realargs = getopt.gnu_getopt(args, cmd_opts)
+            options, realargs = getopt.gnu_getopt(targs, cmd_opts)
         except getopt.GetoptError:
             # That's the wrong version, so try the next one.
             continue
 
-        if transform_opts:
-            options = transform_opts(options)
-        args = [o + a for o, a in options] + realargs
+        options = transform_opts(options)
+        ttargs = [o + a for o, a in options] + realargs
         for o, a in options:
             if o == '-P':
-                return (version, a, args)
+                return (version, a, ttargs)
         if command == 'cancel' and len(realargs) > 0:
-            return (version, realargs[0], args)
+            return (version, realargs[0], ttargs)
         # Since we've successfully getopt'd, don't try any other versions,
         # but do note that we like this version.
         preference = version

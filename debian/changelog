@@ -1,3 +1,13 @@
+debathena-printing-config (1.12) jaunty; urgency=low
+
+  * Insert LPROPT at the beginning of the options, rather than after the
+    first option (which may accidentally split an option and its arguments).
+  * Fix some issues with transformations to the 'args' variable sticking
+    around for a larger scope than they were intended to. This prevents
+    LPROPT from being inserted if we fall back from lprng to cups.
+
+ -- Geoffrey Thomas <geofft@mit.edu>  Fri, 11 Sep 2009 15:36:31 -0400
+
 debathena-printing-config (1.11) unstable; urgency=low
 
   * Treat lpr -z as a toggle flag, and set it by default. (Trac: #138)
