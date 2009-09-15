@@ -1,3 +1,10 @@
+debathena-printing-config (1.13) unstable; urgency=low
+
+  * Enable the file, cups, and lpr printing backends (instead of just file
+    and cups).
+
+ -- Evan Broder <broder@mit.edu>  Tue, 15 Sep 2009 14:46:59 -0400
+
 debathena-printing-config (1.12) unstable; urgency=low
 
   * Insert LPROPT at the beginning of the options, rather than after the
