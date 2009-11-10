@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# This script uses /etc/cups/lpoptions instead of setting the default
+# printer through the CUPS library because, if a workstation is using
+# a remote cupsd, it doesn't have permissions to change the default
+# printer.
+#
+# This takes effect locally, but for all users.
+
+if [ -e /etc/cups/lpoptions ]; then
+    sed -i -e '/### BEGIN debathena-printing-config/,/### END debathena-printing-config/d' /etc/cups/lpoptions
+fi
+
+# We would worry about printers that don't exist, but CUPS doesn't
+# seem to get too angry if the queue doesn't exist.
+cat >>/etc/cups/lpoptions <<EOF
+### BEGIN debathena-printing-config
+Default $PRINTER
+### END debathena-printing-config
+EOF
