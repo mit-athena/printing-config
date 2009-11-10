@@ -14,3 +14,12 @@ Description: Printing configuration for Debathena
  This package configures both graphical and command-line printing in a way that
  is compatible with the traditional Athena printing infrastructure and eases
  the transition to CUPS-based printing.
+
+Package: debathena-cluster-printing-config
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, debathena-printing-config
+Provides: ${diverted-files}
+Conflicts: ${diverted-files}
+Description: Printing configuration for Debathena cluster machines
+ This package makes configuration tweaks to both graphical and
+ command-line printing in ways that better suit the Athena cluster environment.

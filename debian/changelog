@@ -1,3 +1,10 @@
+debathena-printing-config (1.14) unstable; urgency=low
+
+  * Add a new debathena-cluster-printing-config package that configures
+    the CUPS client to use printers.mit.edu.
+
+ -- Evan Broder <broder@mit.edu>  Tue, 10 Nov 2009 11:19:24 -0500
+
 debathena-printing-config (1.13) unstable; urgency=low
 
   * Enable the file, cups, and lpr printing backends (instead of just file
