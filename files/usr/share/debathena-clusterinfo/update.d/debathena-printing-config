@@ -13,8 +13,10 @@ fi
 
 # We would worry about printers that don't exist, but CUPS doesn't
 # seem to get too angry if the queue doesn't exist.
-cat >>/etc/cups/lpoptions <<EOF
+if [ -n "$PRINTER" ]; then
+    cat >>/etc/cups/lpoptions <<EOF
 ### BEGIN debathena-printing-config
 Default $PRINTER
 ### END debathena-printing-config
 EOF
+fi
