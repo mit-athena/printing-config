@@ -20,8 +20,8 @@ set -e
 
 case "$1" in
     configure)
-	if hash save-cluster-info >/dev/null 2>&1; then
-	    save-cluster-info
+	if [ -e /etc/cups/lpoptions ]; then
+	    sed -i -e '/### BEGIN debathena-printing-config/,/### END debathena-printing-config/d' /etc/cups/lpoptions
 	fi
     ;;
 

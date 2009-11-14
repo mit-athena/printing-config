@@ -1,9 +1,8 @@
 debathena-printing-config (1.16) unstable; urgency=low
 
-  * Only write out a block in the lpoptions file if there is a printer
-    set in clusterinfo.
+  * Revert 1.15, based on further examination of how Gtk+ printing works.
 
- -- Evan Broder <broder@mit.edu>  Tue, 10 Nov 2009 17:20:30 -0500
+ -- Evan Broder <broder@mit.edu>  Fri, 13 Nov 2009 19:20:39 -0500
 
 debathena-printing-config (1.15) unstable; urgency=low
 
