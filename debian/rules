@@ -22,10 +22,10 @@ DEB_UNDIVERT_FILES_debathena-printing-config += \
 	/usr/share/man/man1/cancel.debathena.1.gz \
 	/usr/share/man/man8/lpc.debathena.8.gz
 
-DEB_UNDIVERT_VERSION_/usr/bin/cancel.debathena = 1.17
-DEB_UNDIVERT_VERSION_/usr/sbin/lpc.debathena = 1.17
-DEB_UNDIVERT_VERSION_/usr/share/man/man1/cancel.debathena.1.gz = 1.17
-DEB_UNDIVERT_VERSION_/usr/share/man/man8/lpc.debathena.8.gz = 1.17
+DEB_UNDIVERT_VERSION_/usr/bin/cancel.debathena = 1.17~
+DEB_UNDIVERT_VERSION_/usr/sbin/lpc.debathena = 1.17~
+DEB_UNDIVERT_VERSION_/usr/share/man/man1/cancel.debathena.1.gz = 1.17~
+DEB_UNDIVERT_VERSION_/usr/share/man/man8/lpc.debathena.8.gz = 1.17~
 
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/rules/config-package.mk
