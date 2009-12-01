@@ -65,14 +65,12 @@ def zephyr_transform(options):
 
 opts = {
     'cups': {
-        'cancel': ('EU:ah:u:', None, None),
         'lp': ('EU:cd:h:mn:o:q:st:H:P:i:', None, '-d'),
         'lpq': ('EU:h:P:al', None, '-P'),
         'lpr': ('EH:U:P:#:hlmo:pqrC:J:T:', None, '-P'),
         'lprm': ('EU:h:P:', None, '-P'),
     },
     'lprng': {
-        'cancel': ('aAD:P:VU:', None, '-P'), # mit-cancel == mit-lprm
         'lp': ('ckmprswBGYd:D:f:n:q:t:', None, '-d'),
         'lpq': ('aAlLVcvP:st:D:', None, '-P'),
         'lpr': ('ABblC:D:F:Ghi:kJ:K:#:m:P:rR:sT:U:Vw:X:YZ:z1:2:3:4:',
@@ -124,7 +122,7 @@ def getPrintQueue(command, args):
         except KeyError:
             error(1, """
 Error: this script was called as %s, when it must be called as
-one of lpr, lpq, lprm, lp, or cancel
+one of lpr, lpq, lprm, or lp
 
 """ % command)
 

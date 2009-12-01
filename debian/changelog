@@ -9,8 +9,11 @@ debathena-printing-config (1.17) unstable; urgency=low
   * Rephrase man pages to stop talking about Athena 10, and mention
     cups-lp(1)'s documentation of the -o options to lpr.
   * Fix a bug relating to lp using -d for its destination, not -P.
+  * Stop wrapping lpc, since it's only useful with LPRng, and cancel,
+    since it's not useful with LPRng (it's treated exactly the same
+    as LPRng's lprm).
 
- -- Geoffrey Thomas <geofft@mit.edu>  Mon, 30 Nov 2009 18:15:08 -0500
+ -- Geoffrey Thomas <geofft@mit.edu>  Tue, 01 Dec 2009 02:11:08 -0500
 
 debathena-printing-config (1.16) unstable; urgency=low
 
