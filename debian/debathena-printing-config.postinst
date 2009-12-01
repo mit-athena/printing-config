@@ -23,6 +23,10 @@ case "$1" in
 	if [ -e /etc/cups/lpoptions ]; then
 	    sed -i -e '/### BEGIN debathena-printing-config/,/### END debathena-printing-config/d' /etc/cups/lpoptions
 	fi
+
+	if dpkg --compare-versions "$2" lt 1.17; then
+	    rm -f /etc/debathena-printing.conf || true
+	fi
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

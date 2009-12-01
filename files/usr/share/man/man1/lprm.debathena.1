@@ -1,4 +1,4 @@
-.TH lprm 1 Debathena "July 2008" "Athena Printing"
+.TH lprm 1 Debathena "November 2009" "Athena Printing"
 .SH NAME
 lprm \- remove jobs from Athena printers
 .SH SYNOPSIS
@@ -6,10 +6,10 @@ lprm \- remove jobs from Athena printers
 .RB [ \-P printer]
 [other options]
 .SH DESCRIPTION
-Debathena supports two printing systems: LPRng, the current Athena printing
-architecture, and CUPS, a system with better cross-platform support slated for
-use in Athena 10. This command is a script which detects if you are printing to
-an LPRng or CUPS printer, and runs the appropriate version of lprm.
+Debathena supports two printing systems: the traditional LPRng and the
+newer CUPS with better cross-platform support. This command is a script
+which detects if you are printing to an LPRng or CUPS print queue and runs
+the appropriate version of lprm.
 .PP
 See the
 .BR mit-lprm (1)

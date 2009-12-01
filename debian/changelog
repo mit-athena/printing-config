@@ -1,3 +1,17 @@
+debathena-printing-config (1.17) unstable; urgency=low
+
+  * When doing operations against CUPS printers, act against the
+    realserver because load balancing otherwise gets in your way.
+  * Remove /etc/debathena-printing.conf and revert 1.4 and much of 1.7.
+    Use the printing subsystem that the print queue lives on; attempt to
+    convert LPRng options to CUPS ones for CUPS printers, but not vice
+    versa.
+  * Rephrase man pages to stop talking about Athena 10, and mention
+    cups-lp(1)'s documentation of the -o options to lpr.
+  * Fix a bug relating to lp using -d for its destination, not -P.
+
+ -- Geoffrey Thomas <geofft@mit.edu>  Mon, 30 Nov 2009 18:15:08 -0500
+
 debathena-printing-config (1.16) unstable; urgency=low
 
   * Revert 1.15, based on further examination of how Gtk+ printing works.

@@ -8,13 +8,41 @@
 # intended for should go to CUPS or LPRng and sends it off in the
 # right direction
 
+import cups
 import errno
 import hesiod
 import getopt
 import os
 import shlex
+import socket
 import sys
 from subprocess import call, PIPE
+import urllib
+
+try:
+    cupsd = cups.Connection()
+except RuntimeError: # Is this actually safer than "except:"?
+    cupsd = None
+
+def hesiod_lookup(hes_name, hes_type):
+    """"A wrapper with somewhat graceful error handling."""
+    try:
+        h = hesiod.Lookup(hes_name, hes_type)
+        if len(h.results) > 0:
+            return h.results
+    except IOError, e:
+        if e.errno in (errno.ENOENT, errno.EMSGSIZE):
+            return []
+        else:
+            raise
+
+cups_frontends = ['cups.mit.edu',
+                  'printers.mit.edu',
+                  'cluster-printers.mit.edu']
+cups_backends = [s.lower() for s in
+                 hesiod_lookup('cups-print', 'sloc')
+               + hesiod_lookup('cups-cluster', 'sloc')]
+
 
 def lpropt_transform(args):
     if 'LPROPT' in os.environ:
@@ -37,19 +65,19 @@ def zephyr_transform(options):
 
 opts = {
     'cups': {
-        'cancel': ('EU:ah:u:', None),
-        'lp': ('EU:cd:h:mn:o:q:st:H:P:i:', None),
-        'lpq': ('EU:h:P:al', None),
-        'lpr': ('EH:U:P:#:hlmo:pqrC:J:T:', None),
-        'lprm': ('EU:h:P:', None),
+        'cancel': ('EU:ah:u:', None, None),
+        'lp': ('EU:cd:h:mn:o:q:st:H:P:i:', None, '-d'),
+        'lpq': ('EU:h:P:al', None, '-P'),
+        'lpr': ('EH:U:P:#:hlmo:pqrC:J:T:', None, '-P'),
+        'lprm': ('EU:h:P:', None, '-P'),
     },
     'lprng': {
-        'cancel': ('aAD:P:VU:', None),
-        'lp': ('ckmprswBGYd:D:f:n:q:t:', None),
-        'lpq': ('aAlLVcvP:st:D:', None),
+        'cancel': ('aAD:P:VU:', None, '-P'), # mit-cancel == mit-lprm
+        'lp': ('ckmprswBGYd:D:f:n:q:t:', None, '-d'),
+        'lpq': ('aAlLVcvP:st:D:', None, '-P'),
         'lpr': ('ABblC:D:F:Ghi:kJ:K:#:m:P:rR:sT:U:Vw:X:YZ:z1:2:3:4:',
-            (lpropt_transform, zephyr_transform)),
-        'lprm': ('aAD:P:VU:', None),
+            (lpropt_transform, zephyr_transform), '-P'),
+        'lprm': ('aAD:P:VU:', None, '-P'),
     }
 }
 
@@ -64,60 +92,31 @@ def error(code, message):
     sys.stderr.write(message)
     sys.exit(code)
 
-def run(name, command, rargs):
-    """Given a path to a command and the rest of the arguments, exec it
+def execCups(command, queue, args):
+    """Pass the command and arguments on to the CUPS versions of the command
     """
-    os.execv(command, [name] + rargs)
+    new_command = '/usr/bin/cups-%s' % command
+    os.execv(new_command, [command] + args)
 
-def returnCode(*command):
-    """Get the return code of a command and throw away the output
+def execLprng(command, queue, args):
+    """Pass the command and arguments on to the LPRng versions of the command
     """
-    return call(command, stdout=PIPE, stderr=PIPE)
+    new_command = '/usr/bin/mit-%s' % command
+    os.execv(new_command, [command] + args)
 
-def cupsQueueExists(queue):
-    """Test if queue name exists as a CUPS queue
-    """
-    return returnCode('/usr/bin/lpq.debathena-orig', '-P%s' % queue) == 0
-
-def lprngQueueExists(queue):
-    """Test if queue name exists as an LPRng queue
-    """
-    try:
-        h = hesiod.Lookup(queue, 'pcap')
-        return len(h.results) > 0
-    except IOError, e:
-        if e.errno in (errno.ENOENT, errno.EMSGSIZE):
-            return None
-        else:
-            raise
-
-def useCups(command, queue, args):
-    """If queue exists as a CUPS queue, pass the command and arguments on to the
-    CUPS versions of the command
-    """
-    if queue == None or cupsQueueExists(queue) or not lprngQueueExists(queue):
-        new_command = '/usr/bin/%s.debathena-orig' % command
-        run(command, new_command, args)
-
-def useLprng(command, queue, args):
-    """If queue exists as an LPRng queue, pass the command and arguments on to
-    the LPRng versions of the command
-    """
-    if queue == None or lprngQueueExists(queue) or not cupsQueueExists(queue):
-        new_command = '/usr/bin/mit-%s' % command
-        run(command, new_command, args)
-
-def getPrintQueue(command, args, preference):
+def getPrintQueue(command, args):
     """Given argv, extract the printer name, using knowledge of the possible
     command line options for both the CUPS and LPRng versions of the command
     that this script was called as. Also, return whether the command line
     options imply a particular version of the command.
     """
-    for version in preflist[preference]:
+
+    preference = 'cups'
+    for version in ['cups', 'lprng']:
         try:
             # Get the set of options that correspond to the command that this
             # script was invoked as
-            (cmd_opts, transformers) = opts[version][command]
+            (cmd_opts, transformers, destopt) = opts[version][command]
             if transformers:
                 (transform_args, transform_opts) = transformers
             else:
@@ -139,54 +138,152 @@ one of lpr, lpq, lprm, lp, or cancel
 
         options = transform_opts(options)
         ttargs = [o + a for o, a in options] + realargs
-        for o, a in options:
-            if o == '-P':
-                return (version, a, ttargs)
-        if command == 'cancel' and len(realargs) > 0:
-            return (version, realargs[0], ttargs)
+        if destopt:
+            for o, a in options:
+                if o == destopt:
+                    return (version, a, ttargs)
+        else:
+            if len(realargs) > 0:
+                return (version, realargs[0], ttargs)
         # Since we've successfully getopt'd, don't try any other versions,
         # but do note that we like this version.
         preference = version
         break
 
-    # This script was invoked with argv[0] set to something it doesn't know
-    # about. In that case, use our preferred version.
+    # Either we failed to getopt, or nobody told us what printer to use,
+    # so let's use the default printer
     default = os.getenv('PRINTER')
+    if not default:
+        if cupsd:
+            default = cupsd.getDefault()
+    if not default:
+        h = hesiod_lookup(os.uname()[1], 'cluster')
+        for result in h:
+            (key, value) = result.split(maxsplit=1)
+            if key == 'lpr':
+                default = value
+
     if default:
         return (preference, default, args)
-    try:
-        h = hesiod.Lookup(os.uname()[1], 'cluster')
-        for result in h.results:
-            (key, value) = result.split(None, 1)
-            if key == 'lpr':
-                return (preference, value, args)
-    except IOError, e:
-        if e.errno in (errno.ENOENT, errno.EMSGSIZE):
-            pass
-        else:
-            raise
+    else:
+        error(2, """
+No default printer configured. Specify a -P option, or configure a
+default printer via e.g. System | Administration | Printing.
 
-    return (preference, None, args)
+""")
+
+def getCupsURI(printer):
+    if not cupsd:
+        return None
+    try:
+        attrs = cupsd.getPrinterAttributes(printer)
+        return attrs.get('device-uri')
+    except cups.IPPError:
+        return None
+
+def translate_lprng_args_to_cups(command, args):
+    # TODO yell at user if/when we decide that these args are deprecated
+
+    # If getopt fails, something went very wrong -- _we_ generated this
+    options, realargs = getopt.gnu_getopt(args, opts['lprng'][command][0])
+    cupsargs = []
+    for (o, a) in options:
+        if o in ('-a') and command == 'lpq':
+            cupsargs += [('-a', a)]
+        elif o in ('-b', '-l') and command == 'lpr':
+            cupsargs += [('-l', a)]
+        elif o in ('-h') and command == 'lpr':
+            cupsargs += [('-h', a)]
+        elif o in ('-J') and command == 'lpr':
+            cupsargs += [('-J', a)]
+        elif o in ('-K', '-#') and command == 'lpr':
+            cupsargs += [('-#', a)]
+        elif o in ('-P'):
+            cupsargs += [('-P', a)]
+        elif o in ('-T') and command == 'lpr':
+            cupsargs += [('-T', a)]
+        elif o in ('-U') and command == 'lpr':
+            cupsargs += [('-U', a)]
+        elif o in ('-v') and command == 'lpq':
+            cupsargs += [('-l', a)]
+        elif o in ('-Z') and command == 'lpr':
+            if a == 'simplex':
+                cupsargs += [('-o', 'sides=one-sided')]
+            elif a == 'duplex':
+                cupsargs += [('-o', 'sides=two-sided-long-edge')]
+            elif a == 'duplexshort':
+                cupsargs += [('-o', 'sides=two-sided-short-edge')]
+            # TODO attempt to deal banner=staff
+        elif o in ('-m') and command == 'lpr':
+            # TODO figure out if CUPS can do mail/zephyr
+            pass # Don't warn about this, we probably generated it
+        else:
+            sys.stderr.write("Warning: option %s%s not converted to CUPS\n"
+                             % (o, a))
+    joincupsargs = [o + a for o, a in cupsargs] + realargs
+    sys.stderr.write("Using cups-%s %s\n" % (command, ' '.join(joincupsargs)))
+    return joincupsargs
 
 if __name__ == '__main__':
     # Remove the command name from the arguments when we extract it
     command = os.path.basename(sys.argv.pop(0))
-    # Figure out whether to prefer LPRng or CUPS. If we can't decide based on
-    # the config file, then we're going with CUPS
-    try:
-        # Ok, yeah, the lower might be going a little overboard, but I don't
-        # like giving users room to screw things up :)
-        preference = open('/etc/debathena-printing.conf').read().\
-            strip().lower()
-    except IOError:
-        preference = 'cups'
 
     # Determine if the arguments prefer one version of this command,
-    # For instance, "lpq -h cups.csail -P xerox5" wants cups-lpq
-    (preference, queue, args) = getPrintQueue(command, sys.argv, preference)
+    # For instance, "lpr -Zduplex" wants mit-lpr.
+    (preference, queue, args) = getPrintQueue(command, sys.argv)
 
-    fns = {'cups': [useCups, useLprng],
-           'lprng': [useLprng, useCups]}
-    fn_args = [command, queue, args]
-    for fn in fns[preference]:
-        fn(*fn_args)
+    # Figure out if the queue exists on the local cupsd, and if so, if
+    # it's an Athena queue.
+    # Note that the "local" cupsd might not be on localhost; client.conf or
+    # CUPS_SERVER might have it pointing to e.g. cups.mit.edu, but that's okay.
+    url = getCupsURI(queue)
+    if url:
+        (proto, rest) = urllib.splittype(url)
+        (hostport, path) = urllib.splithost(rest)
+        (host, port) = urllib.splitport(hostport)
+        if (proto == 'ipp' and
+            host.lower() in cups_frontends + cups_backends and
+            path[0:10] == '/printers/'):
+            # Canonicalize the queue name to Athena's, in case someone
+            # has a local printer called something memorable like 'w20'
+            # that points to 'ajax' or something
+            queue = path[10:]
+        else:
+            execCups(command, queue, args)
+
+    # Get rid of any instance on the queue name
+    # TODO The purpose of instances is to have different sets of default
+    # options. Queues may also have default options on the null
+    # instance. Figure out if we need to do anything about them
+    queue = queue.split('/')[0]
+
+    # If we're still here, the queue is definitely an Athena print
+    # queue; it was either in the local cupsd pointing to Athena, or the
+    # local cupsd didn't know about it.
+    # Figure out what Athena thinks the backend server is, and whether
+    # that server is running a cupsd; if not, fall back to LPRng
+
+    pcap = hesiod_lookup(queue, 'pcap')
+    rm = None
+    if pcap:
+        for field in pcap[0].split(':'):
+            if field[0:3] == 'rm=':
+                rm = field[3:]
+    if not rm:
+        # In the unlikely event we're wrong about it being an Athena
+        # print queue, the local cupsd is good enough
+        execCups(command, queue, args)
+
+    try:
+        # See if rm is running a cupsd. If not, assume it's an LPRng server.
+        s = socket.socket()
+        s.settimeout(0.3)
+        s.connect((rm, 631))
+        s.close()
+    except (socket.error, socket.timeout):
+        execLprng(command, queue, args)
+
+    os.environ['CUPS_SERVER'] = rm
+    if preference == 'lprng':
+        args = translate_lprng_args_to_cups(command, args)
+    execCups(command, queue, args)
