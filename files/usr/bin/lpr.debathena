@@ -25,7 +25,7 @@ except RuntimeError: # Is this actually safer than "except:"?
     cupsd = None
 
 def hesiod_lookup(hes_name, hes_type):
-    """"A wrapper with somewhat graceful error handling."""
+    """A wrapper with somewhat graceful error handling."""
     try:
         h = hesiod.Lookup(hes_name, hes_type)
         if len(h.results) > 0:
@@ -236,10 +236,15 @@ if __name__ == '__main__':
     # CUPS_SERVER might have it pointing to e.g. cups.mit.edu, but that's okay.
     url = getCupsURI(queue)
     if url:
+        proto = rest = hostport = path = host = port = None
+
         (proto, rest) = urllib.splittype(url)
-        (hostport, path) = urllib.splithost(rest)
-        (host, port) = urllib.splitport(hostport)
-        if (proto == 'ipp' and
+        if rest:
+            (hostport, path) = urllib.splithost(rest)
+        if hostport:
+            (host, port) = urllib.splitport(hostport)
+        if (proto and host and path and
+            proto == 'ipp' and
             host.lower() in cups_frontends + cups_backends and
             path[0:10] == '/printers/'):
             # Canonicalize the queue name to Athena's, in case someone
