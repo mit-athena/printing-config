@@ -1,0 +1,103 @@
+#!/usr/bin/python
+
+import grp
+import optparse
+import os
+import sys
+
+import cups
+
+
+LOCAL_SERVER = cups.getServer()
+REMOTE_SERVER = 'printers.mit.edu'
+
+
+def parser():
+    parser = optparse.OptionParser(
+        usage="usage: %prog [options] <Athena queue> [<Athena queue> ...]"
+        )
+
+    parser.add_option('-f', '--force',
+                      action='store_true',
+                      dest='force',
+                      default=False,
+                      help="Attempt to install queue even if checks fail"
+                      )
+
+    return parser
+
+
+def error(msg):
+    print >>sys.stderr, msg.strip()
+    sys.exit(-1)
+
+
+def addAthenaPrinter(queue, force=False):
+    # Local cupsd
+    cups.setServer(LOCAL_SERVER)
+    lc = cups.Connection()
+    # Remote cupsd
+    cups.setServer(REMOTE_SERVER)
+    rc = cups.Connection()
+
+    queues = rc.getPrinters()
+    if queue not in queues:
+        error('Athena printer %s does not exist' % queue)
+    if not force and queue in lc.getPrinters():
+        error('The Athena printer %s has already been configured locally' %
+              queue)
+
+    info = queues[queue]
+
+    # Download the PPD
+    try:
+        ppd = rc.getPPD(queue)
+    except:
+        error("""
+There was a problem downloading the printer configuration from the
+Athena print servers. This will happen if you're not on campus. If you
+are on campus, this could indicate a bug in Debathena.
+""")
+    try:
+        lc.addPrinter(queue,
+                      filename=ppd,
+                      info=info['printer-info'],
+                      location=info['printer-location'],
+                      device=info['printer-uri-supported'])
+
+        for k, v in rc.getPrinterAttributes(queue).items():
+            if not v:
+                continue
+            if not k.endswith('-default'):
+                continue
+            k = k[:-len('-default')]
+
+            lc.addPrinterOptionDefault(queue, k, v)
+
+        lc.acceptJobs(queue)
+        lc.enablePrinter(queue)
+    finally:
+        os.unlink(ppd)
+
+
+def main():
+    options, args = parser().parse_args()
+
+    try:
+        if (not options.force and
+            os.getuid() != 0 and
+            grp.getgrnam('lpadmin').gr_gid not in os.getgroups()):
+            error("""
+You do not appear to have permission to modify printers on this system.
+""")
+    except Exception:
+        error("""
+Unable to determine if you have permission to modify printers on this
+system.
+""")
+
+    for q in args:
+        addAthenaPrinter(q, force=options.force)
+
+if __name__ == '__main__':
+    main()

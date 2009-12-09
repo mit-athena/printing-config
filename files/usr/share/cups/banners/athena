@@ -1,0 +1,549 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 0 0 612 792
+%%Pages: 1
+%%LanguageLevel: 1
+%%DocumentData: Clean7Bit
+%%DocumentSuppliedResources: procset bannerprint/1.0
+%%DocumentNeededResources: font Helvetica Helvetica-Bold Times-Roman
+%%Creator: Michael Sweet, Apple Inc.
+%%CreationDate: D:20070620123000+0700
+%%Title: Test Page
+%%EndComments
+
+% $Id: banner.ps,v 1.4 2000/03/01 20:00:29 mwhitson Exp $
+
+% The following should be defined by a wrapper (such as banner.pl):
+
+% Project Athena Owl Logo
+% Copyright 1986 by the Massachusetts Institute of Technology
+%
+% Original developed by W. E. Sommerfeld, 1986.
+% Owl eye shading, twig tuning by J. H. Saltzer
+%
+% Adjustments of size and position are provided at the end.
+%
+/circle { dup 3 index add 2 index moveto 0 360 arc } bind def
+
+/ellipse
+  { 
+    matrix currentmatrix		% Push current matrix	
+    5 1 roll    		% roll to bottom
+    3 index 2 index add 3 index moveto	% move to start
+    4 2 roll translate scale	% translate then scale
+    0 0 1 0 360 arc		% draw it
+    setmatrix			% restore matrix
+  } def
+
+/owl1 {
+% Do the filled sections first. . .
+% right eye
+gsave
+newpath
+120 120 6 circle
+closepath fill
+newpath
+121 121 3 circle
+closepath 1 setgray fill
+grestore
+% left eye
+newpath
+90 120 6 circle
+closepath fill
+gsave
+91 121 3 circle
+closepath 1 setgray fill
+grestore
+
+% Containing Circle
+75 75 102 circle
+% Left eye
+90 120 10 circle
+% Right eye
+120 120 10 circle
+% Berry on tree
+37.5 111 3 circle  % 37.5 111 2.5 circle
+% Theta (outside)
+140 60 10 circle
+% Theta (inside)
+140 60 .5 circle
+
+% High leaf
+
+35 140 15 10 ellipse
+
+% Low leaf
+
+15 109 10 15 ellipse
+
+% Twigs holding leaves and berry
+
+% berry
+4 145 moveto
+36 113 lineto
+
+% high leaf
+9 140 moveto
+51 140 lineto
+
+% low leaf
+15 134 moveto
+15 93 lineto
+
+% squarish outline lines
+0 45 moveto
+-10 65 -15 120 3 146 curveto
+20 160 25 155 75 155 curveto
+75 -5 moveto
+100 -5 145 5 155 15 curveto
+165 25 160 100 155 135 curveto
+
+% Main outline of owl
+
+stroke currentlinewidth dup 2 mul setlinewidth
+
+35 14 moveto 35 18 lineto 36 19 lineto 37 20 lineto 50 20 lineto
+52 21 lineto 55 24 lineto 56 29 lineto 54 34 lineto 53 36 lineto
+51 38 lineto 48 40 lineto 41 43 lineto 31 46 lineto 26 45 lineto
+20 44 lineto 15 43 lineto 13 43 lineto 11 44 lineto 10 45 lineto 
+10 46 lineto 11 48 lineto 13 51 lineto 20 61 lineto 30 75 lineto 
+34 80 lineto 40 87 lineto 45 93 lineto 50 97 lineto 55 101 lineto 
+60 103 lineto 64 105 lineto 71 105 lineto 69 108 lineto 67 112 lineto
+66 115 lineto 67 120 lineto 68 124 lineto 71 129 lineto 72 132 lineto
+73 135 lineto 71 141 lineto 75 139 lineto 80 137 lineto 90 136 lineto 
+100 135 lineto 120 135 lineto 130 136 lineto 140 137 lineto
+146 140 lineto 144 136 lineto 142 132 lineto 141 125 lineto
+142 118 lineto 142 112 lineto 140 106 lineto 136 100 lineto
+132 95 lineto 129 92 lineto 124 89 lineto 126 86 lineto 127 80 lineto
+126 73 lineto 124 66 lineto 120 60 lineto 116 55 lineto 110 50 lineto
+105 46 lineto 100 43 lineto 91 39 lineto 84 36 lineto 75 35 lineto
+73 30 lineto 73 25 lineto 74 22 lineto 76 20 lineto 90 20 lineto 
+92 18 lineto 92 14 lineto
+
+75 35 moveto 65 33 lineto 62 31 lineto 61 27 lineto 61 22 lineto
+62 20 lineto 63 19 lineto 64 19 lineto 66 21 lineto 67 25 lineto 
+66 31 lineto 65 33 lineto
+
+20 44 moveto 20 27 lineto 22 25 lineto 38 25 lineto 40 27 lineto
+40 43 lineto
+%  (end of main owl outline)
+
+stroke setlinewidth
+
+% everything else
+
+31 46 moveto 39 49 lineto 50 53 lineto 59 57 lineto 76 67 lineto
+80 70 lineto 92 80 lineto 100 88 lineto 102 91 lineto 102 94 lineto
+
+71 105 moveto 75 103 lineto 80 101 lineto 87 100 lineto 92 99 lineto
+99 96 lineto 102 94 lineto 110 90 lineto 124 89 lineto
+% Damned stack limit!
+} bind def /owl2 {
+26 45 moveto 26 30 lineto
+
+35 45 moveto 35 30 lineto
+
+64 105 moveto 78 80 lineto
+
+33 79 moveto 60 66 lineto
+
+68 97 moveto 66 99 lineto 61 98 lineto 48 83 lineto
+
+72 90 moveto 68 94 lineto 65 93 lineto 63 92 lineto 53 82 lineto
+
+75 85 moveto 73 87 lineto 70 88 lineto 66 86 lineto 60 80 lineto
+
+77 80 moveto 75 83 lineto 73 83 lineto 67 79 lineto
+
+44 73 moveto 40 74 lineto 38 73 lineto 33 68 lineto
+
+51 70 moveto 46 71 lineto 42 69 lineto 32 61 lineto
+
+60 66 moveto 54 67 lineto 46 64 lineto 30 52 lineto
+
+105 92 moveto 105 100 lineto 106 104 lineto 108 107 lineto
+110 109 lineto 115 112 lineto
+
+105 100 moveto 104 104 lineto 102 107 lineto 100 109 lineto 95 112 lineto
+
+130 90 moveto 150 80 lineto 130 70 lineto
+
+137 86 moveto 137 74 lineto
+
+130 30 moveto 130 45 lineto 150 45 lineto 150 30 lineto
+
+140 45 moveto 140 35 lineto
+} bind def
+
+/owl { gsave currentpoint translate -23 -23 translate .3 .3 scale owl1 owl2 stroke grestore } bind def
+
+/logo { owl } def
+
+% /bannertype /random def
+
+
+% XXX  We should find some better metric for determining paper size
+/inchheight 11 def
+/inchwidth 8.5 def
+
+% end of banner.pl stuff
+
+/inch { 72 mul } def
+
+inchwidth inch 0 translate 90 rotate
+/height inchwidth inch def
+/width inchheight inch def
+
+% Font to print the username in
+/userfontsize 72 def
+/userfont /Helvetica findfont userfontsize scalefont def
+
+% Font for the motd
+/motdfontsize 10 def
+/motdfont /Times-Roman findfont motdfontsize scalefont def
+
+% Font for the other info
+/otherfontsize 12 def
+/otherfont /Helvetica-Narrow findfont otherfontsize scalefont def
+
+/newline {
+  motdfontsize mul leftmargin exch currentpoint exch pop exch sub moveto
+} bind def
+
+/dofont {
+  cvn motdfontsize selectfont
+} bind def
+
+% Measure a word
+/measure {
+  gsave
+  (\033) search 			% post (\033) pre true OR string false
+    { stringwidth pop exch pop exch	% prelen post
+      ( ) search exch dofont		% prelen post ( ) true OR prelen false
+        { pop measure add }
+      if }
+    { stringwidth pop }
+  ifelse
+  grestore
+} bind def
+
+% Write one word
+/doword {
+  dup measure currentpoint pop add rightmargin gt
+    { currentpoint pop leftmargin ne { 1 newline } if }
+  if
+
+  currentpoint pop exch
+
+  { (\033) search			% post (\033) pre true OR string false
+      { show pop ( ) search exch dofont	% post ( ) true OR false
+          { pop exch pop currentpoint pop exch }
+          { exit }
+        ifelse }
+      { show exit }
+    ifelse
+  } loop
+
+  % and write the following space if we wrote anything else
+  currentpoint pop ne { ( ) show } if
+} bind def
+
+% Write out a paragraph
+/parwrap {
+  % split into words and write them one by one
+  { ( ) search
+      { dup length 0 eq { pop show } { doword pop } ifelse }
+      { exit }
+    ifelse }
+  loop
+  doword
+} bind def
+
+/innerwrap {
+  % If text contains newline, parwrap first half, newline, and wrap
+  % second half. if not, just parwrap whole thing.
+  (\n) search
+    { parwrap pop 1.75 newline innerwrap }
+    { parwrap }
+  ifelse
+} bind def
+
+% Wrap text
+/wrap {
+  exch /rightmargin exch def
+  exch /leftmargin exch def
+  (Times-Roman) dofont
+
+  innerwrap
+} bind def
+
+% Write right-justified
+/rshow {
+  dup stringwidth pop -1 mul 0 rmoveto show
+} bind def
+
+/pagetop height .5 inch sub def
+/pagebot .5 inch def
+/pageleft .5 inch def
+/pageright width .5 inch sub def
+/hsplit pageleft pageright add 2 div def
+/vsplit pagetop 1.5 inch sub def
+
+
+/banner {
+  % set clipping path
+  gsave newpath
+  pageleft pagetop moveto pageright pagetop lineto
+  pageright vsplit lineto pageleft vsplit lineto pageleft pagetop lineto
+  clip newpath
+
+  % date
+  pageleft pagetop otherfontsize sub moveto 
+  otherfont setfont ({time-at-creation}) show
+
+  % logo
+  pageleft hsplit .25 inch sub add 2 div vsplit pagetop add 2 div moveto
+  gsave .75 setgray logo grestore
+
+  % vertical line
+  hsplit pagetop moveto hsplit vsplit lineto stroke
+
+  % username
+  gsave
+  pageright pagetop userfontsize .75 mul sub moveto
+  userfont setfont 
+  pageright hsplit .25 inch add sub dup ({job-originating-user-name}) stringwidth pop lt
+    { ({job-originating-user-name}) stringwidth pop div 1 scale }
+    { pop }
+    ifelse
+  ({job-originating-user-name}) stringwidth pop -1 mul 0 rmoveto ({job-originating-user-name}) show
+  grestore
+
+  otherfont setfont
+
+  % host
+  pageright pagetop userfontsize sub otherfontsize sub moveto
+  ({job-originating-host-name}) rshow
+
+  % queue/job
+  pageright pagetop userfontsize sub otherfontsize 2.2 mul sub moveto
+  ({printer-name})show 
+  pageright pagetop userfontsize sub otherfontsize 2.2 mul sub moveto
+  ({job-name}) rshow
+
+  % horizontal line
+  pageleft vsplit moveto pageright vsplit lineto stroke
+
+  % undo clipping path
+  grestore
+
+} bind def
+
+% Draw graph paper
+/graph {
+  % left top right bottom spacing
+  % left bottom right top spacing
+
+  /spacing exch def
+  /graphtop exch def
+  /graphright exch def
+  /graphbot exch def
+  /graphleft exch def
+
+  gsave 0 setlinewidth
+
+  graphleft spacing graphright 
+    { dup graphtop moveto graphbot lineto stroke } for
+
+  graphtop spacing neg graphbot
+    { dup graphleft exch moveto graphright exch lineto stroke } for
+
+  grestore
+} bind def
+
+% Draw hex paper (from tlyu)
+/s30 30 sin def
+/c30 30 cos def
+/hex{
+	% llx lly urx ury spacing
+	[/r/ury/urx/lly/llx]{exch def}forall
+	gsave
+	0 setlinewidth
+	llx lly moveto urx lly lineto urx ury lineto llx ury lineto
+	closepath clip newpath
+	[r 2 r mul] 0 setdash
+	lly 2 r c30 mul mul ury {
+		dup llx exch moveto urx exch lineto stroke
+	} for
+	[r 2 r mul] 2 r mul r s30 mul sub setdash
+	lly r c30 mul add 2 r c30 mul mul ury {
+		dup llx exch moveto urx exch lineto stroke
+	} for
+	[r 2 r mul] r setdash
+	lly urx llx sub r div 3 div 0.5 add cvi 3 r mul mul s30 div c30 mul sub
+	2 r c30 mul mul ury {
+		dup llx exch moveto
+		ury exch sub c30 div s30 mul llx add ury lineto stroke
+	} for
+	lly 2 r c30 mul mul
+	ury urx llx sub r div 3 div 0.5 add cvi 3 r mul mul s30 div c30 mul add
+	{
+		dup llx exch moveto
+		llx sub c30 div s30 mul llx add lly lineto stroke
+	} for
+	grestore
+} bind def
+
+% Draw log-log graph paper (from tlyu)
+/loglog {
+	% llx lly urx ury spacing
+	[/r /ury /urx /lly /llx] {exch def} forall
+	0 setlinewidth
+	/wd urx llx sub r div cvi r mul def /ht ury lly sub r div cvi r mul def
+	llx r urx {lly moveto 0 ht rlineto stroke} for
+	lly r ury {llx exch moveto wd 0 rlineto stroke} for
+	[.5] 0 setdash
+	/logvals [1 1 9 {log r mul} for] def
+	llx r urx r sub {lly moveto 0 1 8 {
+			logvals exch get
+			gsave 0 rmoveto 0 ht rlineto stroke grestore
+		} for
+	} for
+	lly r ury r sub {llx exch moveto 0 1 8 {
+			logvals exch get
+			gsave 0 exch rmoveto wd 0 rlineto stroke grestore
+		} for
+	} for
+} bind def
+
+% Draw polar graph paper (from tlyu)
+/polar {
+	% llx lly urx ury spacing
+	[/r /ury /urx /lly /llx] {exch def} forall
+	gsave
+	0 setlinewidth
+	/rmax urx llx sub 2 div dup ury lly sub 2 div dup 3 1 roll
+	lt {pop} {exch pop} ifelse def
+	urx llx sub 2 div llx add ury lly sub 2 div lly add translate
+	0 r rmax {0 0 3 2 roll 0 360 arc stroke} for
+	24 {15 rotate rmax neg 0 moveto rmax 0 lineto stroke} repeat
+} bind def
+
+% Draw musical staff (from srcd)
+
+/staff {
+    % ulx uly length height
+    4 div		% substitute h/4 for h
+    4 2 roll moveto	% go to x, y
+    5 {
+	1 index 0 rlineto		% draw the line
+	1 index neg 1 index neg rmoveto	% back up and down by h/4
+    } repeat
+    pop pop		% clear off the stack
+} bind def
+
+/musicpaper {
+    % llx lly urx ury height number
+    %    (coords assume transforms undone)
+    [/n /h /ury /urx /lly /llx] {exch def} forall
+    % undo transforms from the top of the job
+    -90 rotate
+    inchwidth inch neg 0 translate
+    2 setlinecap
+    newpath
+    % calculate dy between staves based on size and num/page
+    ury lly sub h n mul sub n 1 sub div h add
+    0 1 n 1 sub {	% spc i
+	1 index mul neg ury add
+	llx exch urx llx sub h staff
+    } for
+    stroke pop
+} bind def
+
+% 1/8" graph paper
+/dograph {
+	gsave [.5] 0 setdash pageleft pagebot pageright vsplit .25 inch sub .125 inch graph grestore 
+	pageleft pagebot pageright vsplit .25 inch sub .5 inch graph
+} bind def
+
+% 1/4" graph paper
+/dobiggraph {
+	gsave [.5] 0 setdash pageleft pagebot pageright vsplit .25 inch sub .25 inch graph grestore 
+} bind def
+
+% 1/8" hex grid paper
+/dohex {
+	/splittop vsplit .25 inch sub def
+	pageleft pagebot pageright splittop .125 inch hex
+	gsave 0 setlinewidth      % draw a box around the hex
+	pageleft pagebot moveto pageleft splittop lineto pageright splittop lineto
+	pageright pagebot lineto closepath stroke grestore
+} bind def
+
+% 1" log-log graph paper
+/dologlog {
+	pageleft pagebot pageright vsplit .25 inch sub 1 inch loglog
+} bind def
+
+% 1/8" polar graph paper
+/dopolar {
+	pageleft pagebot pageright vsplit .25 inch sub .125 inch polar
+} bind def
+
+% Musical staff paper, 12 staves/page, 25 pt. staves
+/dostaff {
+    0.40 setlinewidth
+    pagetop vsplit sub 1 inch add pageleft pagetop pageright .5 inch sub 25 12 musicpaper
+} bind def
+
+% Musical staff paper, 10 staves/page, 30 pt. staves
+/dobigstaff {
+    0.48 setlinewidth
+    pagetop vsplit sub 1 inch add pageleft pagetop pageright .5 inch sub 30 10 musicpaper
+} bind def
+
+% pick a random graph
+/dorandom {
+	statusdict/pagecount get exec srand    % Seed off the pagecount.
+	[graphweights {{dup} repeat pop} forall] dup length
+	rand exch mod get
+	dup graphdict exch known {graphdict exch get exec} {dograph} ifelse
+} bind def
+
+% Map names (passed in by wrapper script) to functions
+/graphdict << 
+	/graph		{ dograph }
+	/biggraph	{ dobiggraph }
+        /hex		{ dohex }
+	/loglog		{ dologlog }
+	/polar		{ dopolar }
+	/staff		{ dostaff }
+	/bigstaff	{ dobigstaff }
+	/blank		{ }
+	/random		{ dorandom }
+>> def
+
+/graphweights <<
+	/graph		8
+	/biggraph	1
+	/hex		1
+	/loglog		1
+	/polar		1
+	/staff		1
+	/bigstaff	1
+	/blank		1
+>> def
+
+% print out the header information
+banner
+
+% look up the type of paper to print and do it.  Default to graph if the type is unknown.
+graphdict ({bannertype}) known {
+	graphdict bannertype get exec
+} { 
+	dorandom
+} ifelse
+
+grestore
+showpage
+%%EOF
+
