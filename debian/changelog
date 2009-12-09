@@ -1,9 +1,15 @@
 debathena-printing-config (1.18) unstable; urgency=low
 
+  [ Evan Broder ]
   * Include add-athena-printer script for configuring Athena print queues
     not available via BrowsePoll.
 
- -- Evan Broder <broder@mit.edu>  Tue, 08 Dec 2009 23:47:49 -0500
+  [ Geoffrey Thomas ]
+  * Apparently -z on Athena-patched LPRng was a nop because Zephyr was
+    the default, and there was a -N to disable zephyr. Adjust our
+    wrapper to match.
+
+ -- Geoffrey Thomas <geofft@mit.edu>  Wed, 09 Dec 2009 01:19:00 -0500
 
 debathena-printing-config (1.17.2) unstable; urgency=low
 

@@ -53,8 +53,8 @@ def zephyr_transform(options):
     zephyr = True
     return_options = []
     for o, a in options:
-        if o == '-z':
-            zephyr = not zephyr
+        if o == '-N':
+            zephyr = False
         else:
             return_options.append((o, a))
 
@@ -73,7 +73,7 @@ opts = {
     'lprng': {
         'lp': ('ckmprswBGYd:D:f:n:q:t:', None, '-d'),
         'lpq': ('aAlLVcvP:st:D:', None, '-P'),
-        'lpr': ('ABblC:D:F:Ghi:kJ:K:#:m:P:rR:sT:U:Vw:X:YZ:z1:2:3:4:',
+        'lpr': ('ABblC:D:F:Ghi:kJ:K:#:m:NP:rR:sT:U:Vw:X:YZ:z1:2:3:4:',
             (lpropt_transform, zephyr_transform), '-P'),
         'lprm': ('aAD:P:VU:', None, '-P'),
     }
