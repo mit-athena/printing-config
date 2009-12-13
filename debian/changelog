@@ -1,3 +1,9 @@
+debathena-printing-config (1.18.1) unstable; urgency=low
+
+  * Undo a Python syntax error.
+
+ -- Geoffrey Thomas <geofft@mit.edu>  Sun, 13 Dec 2009 17:37:09 -0500
+
 debathena-printing-config (1.18) unstable; urgency=low
 
   [ Evan Broder ]

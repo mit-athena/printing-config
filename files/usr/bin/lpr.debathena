@@ -157,7 +157,7 @@ one of lpr, lpq, lprm, or lp
     if not default:
         h = hesiod_lookup(os.uname()[1], 'cluster')
         for result in h:
-            (key, value) = result.split(maxsplit=1)
+            (key, value) = result.split(None, 1)
             if key == 'lpr':
                 default = value
 
