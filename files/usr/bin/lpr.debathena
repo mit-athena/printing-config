@@ -64,7 +64,8 @@ opts = {
     'cups': {
         'lp': ('EU:cd:h:mn:o:q:st:H:P:i:', None, '-d'),
         'lpq': ('EU:h:P:al', None, '-P'),
-        'lpr': ('EH:U:P:#:hlmo:pqrC:J:T:', None, '-P'),
+        'lpr': ('EH:U:P:#:hlmo:pqrC:J:T:', 
+            (lpropt_transform, zephyr_transform), '-P'),
         'lprm': ('EU:h:P:', None, '-P'),
     },
     'lprng': {

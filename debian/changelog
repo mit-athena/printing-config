@@ -1,8 +1,14 @@
-debathena-printing-config (1.18.2) UNRELEASED; urgency=low
+debathena-printing-config (1.18.2) unstable; urgency=low
 
+  [ Geoffrey Thomas ]
   * Don't treat any Hesiod IOErrors as fatal.
 
- -- Geoffrey Thomas <geofft@mit.edu>  Sun, 03 Jan 2010 02:56:04 -0500
+  [ Jonathan Reed ]
+  * Add lpropt_transform and zephyr_transform for cups invocation of lpr,
+    so that LPROPT is respected when the command-line arguments are
+    subsystem-agnostic (Trac #509)
+
+ -- Jonathan Reed <jdreed@mit.edu>  Fri, 12 Mar 2010 10:17:52 -0500
 
 debathena-printing-config (1.18.1) unstable; urgency=low
 
