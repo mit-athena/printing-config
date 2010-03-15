@@ -243,12 +243,16 @@ if __name__ == '__main__':
             (host, port) = urllib.splitport(hostport)
         if (proto and host and path and
             proto == 'ipp' and
-            host.lower() in cups_frontends + cups_backends and
-            path[0:10] == '/printers/'):
+            host.lower() in cups_frontends + cups_backends):
             # Canonicalize the queue name to Athena's, in case someone
             # has a local printer called something memorable like 'w20'
             # that points to 'ajax' or something
-            queue = path[10:]
+            if path[0:10] == '/printers/':
+                queue = path[10:]
+            elif path[0:9] == '/classes/':
+                queue = path[9:]
+            else: # we can't parse CUPS' URL, punt to CUPS
+                execCups(command, queue, args)
         else:
             execCups(command, queue, args)
 

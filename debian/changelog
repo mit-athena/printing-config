@@ -1,3 +1,12 @@
+debathena-printing-config (1.19) unstable; urgency=low
+
+  * Allow the IPP URL's path component to start with /classes/ in
+    addition to /printers/, since duplex queues are implemented as
+    classes, so that we deal with Kerberized duplex queues correctly
+    (see [help.mit.edu #1163697]).
+
+ -- Geoffrey Thomas <geofft@mit.edu>  Mon, 15 Mar 2010 18:05:50 -0400
+
 debathena-printing-config (1.18.2) unstable; urgency=low
 
   [ Geoffrey Thomas ]
