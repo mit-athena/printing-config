@@ -62,16 +62,27 @@ def find_queue(queue):
     This function makes a best effort to figure out which server and
     which printing system should be used for printing to queue.
 
-    If the specified queue exists on the default CUPS server, then we
-    always use CUPS.
-
-    Otherwise, we fall back on Hesiod. If the server in Hesiod accepts
-    connections on port 631, we assume CUPS. Otherwise, we assume
+    If a specified queue appears to be an Athena print queue, we use
+    Hesiod to determine the print server. If the print server in
+    Hesiod accepts connections on port 631, we conclude that jobs
+    should be sent to that server over CUPS. Otherwise, we assume
     LPRng.
 
-    Note that because a local CUPS queue may point to a remote queue
-    of a different name, find_queue includes the name of the queue to
-    use against the "remote" print server.
+    A queue is assumed to be an Athena print queue if it's not
+    configured in the default CUPS server. It's also assumed to be an
+    Athena print queue if the default CUPS server simply bounces jobs
+    to any of the Athena print servers.
+
+    If a queue is not an Athena print queue, then we always use the
+    default CUPS server.
+
+    Note that users might configure a local print queue pointing to an
+    Athena print queue with a different name from the Athena print
+    queue (i.e. have a w20 queue that bounces jobs to the ajax Athena
+    queue). In that scenario, we still want to send the job directly
+    to the Athena print server, but we also need to translate the
+    name. Therefore, find_queue includes the translated queue name in
+    its return values.
 
     Args:
       queue: The name of a print queue
