@@ -1,6 +1,8 @@
 debathena-printing-config (1.20) UNRELEASED; urgency=low
 
-  * Add a debathena.printing Python module for common logic.
+  * Add a debathena.printing Python module for common logic:
+    - Determining the print system and print server to use based on the
+      name of a queue
 
  -- Evan Broder <broder@mit.edu>  Sun, 25 Apr 2010 03:13:00 -0400
 

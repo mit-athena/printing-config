@@ -9,7 +9,6 @@
 # right direction
 
 import cups
-import errno
 import hesiod
 import getopt
 import os
@@ -17,7 +16,8 @@ import shlex
 import socket
 import sys
 from subprocess import call, PIPE
-import urllib
+
+from debathena import printing
 
 try:
     cupsd = cups.Connection()
@@ -32,14 +32,6 @@ def hesiod_lookup(hes_name, hes_type):
             return h.results
     except IOError:
         return []
-
-cups_frontends = ['cups.mit.edu',
-                  'printers.mit.edu',
-                  'cluster-printers.mit.edu']
-cups_backends = [s.lower() for s in
-                 hesiod_lookup('cups-print', 'sloc')
-               + hesiod_lookup('cups-cluster', 'sloc')]
-
 
 def lpropt_transform(args):
     if 'LPROPT' in os.environ:
@@ -75,11 +67,6 @@ opts = {
             (lpropt_transform, zephyr_transform), '-P'),
         'lprm': ('aAD:P:VU:', None, '-P'),
     }
-}
-
-preflist = {
-    'cups': ['cups', 'lprng'],
-    'lprng': ['lprng', 'cups']
 }
 
 def error(code, message):
@@ -168,15 +155,6 @@ default printer via e.g. System | Administration | Printing.
 
 """)
 
-def getCupsURI(printer):
-    if not cupsd:
-        return None
-    try:
-        attrs = cupsd.getPrinterAttributes(printer)
-        return attrs.get('device-uri')
-    except cups.IPPError:
-        return None
-
 def translate_lprng_args_to_cups(command, args):
     # TODO yell at user if/when we decide that these args are deprecated
 
@@ -226,69 +204,15 @@ if __name__ == '__main__':
 
     # Determine if the arguments prefer one version of this command,
     # For instance, "lpr -Zduplex" wants mit-lpr.
-    (preference, queue, args) = getPrintQueue(command, sys.argv)
+    preference, queue, args = getPrintQueue(command, sys.argv)
 
-    # Figure out if the queue exists on the local cupsd, and if so, if
-    # it's an Athena queue.
-    # Note that the "local" cupsd might not be on localhost; client.conf or
-    # CUPS_SERVER might have it pointing to e.g. cups.mit.edu, but that's okay.
-    url = getCupsURI(queue)
-    if url:
-        proto = rest = hostport = path = host = port = None
+    system, server, queue = printing.find_queue(queue)
 
-        (proto, rest) = urllib.splittype(url)
-        if rest:
-            (hostport, path) = urllib.splithost(rest)
-        if hostport:
-            (host, port) = urllib.splitport(hostport)
-        if (proto and host and path and
-            proto == 'ipp' and
-            host.lower() in cups_frontends + cups_backends):
-            # Canonicalize the queue name to Athena's, in case someone
-            # has a local printer called something memorable like 'w20'
-            # that points to 'ajax' or something
-            if path[0:10] == '/printers/':
-                queue = path[10:]
-            elif path[0:9] == '/classes/':
-                queue = path[9:]
-            else: # we can't parse CUPS' URL, punt to CUPS
-                execCups(command, queue, args)
-        else:
-            execCups(command, queue, args)
-
-    # Get rid of any instance on the queue name
-    # TODO The purpose of instances is to have different sets of default
-    # options. Queues may also have default options on the null
-    # instance. Figure out if we need to do anything about them
-    queue = queue.split('/')[0]
-
-    # If we're still here, the queue is definitely an Athena print
-    # queue; it was either in the local cupsd pointing to Athena, or the
-    # local cupsd didn't know about it.
-    # Figure out what Athena thinks the backend server is, and whether
-    # that server is running a cupsd; if not, fall back to LPRng
-
-    pcap = hesiod_lookup(queue, 'pcap')
-    rm = None
-    if pcap:
-        for field in pcap[0].split(':'):
-            if field[0:3] == 'rm=':
-                rm = field[3:]
-    if not rm:
-        # In the unlikely event we're wrong about it being an Athena
-        # print queue, the local cupsd is good enough
+    if system == printing.SYSTEM_CUPS:
+        if preference == 'lprng':
+            args = translate_lprng_args_to_cups(command, args)
+        if server:
+            os.environ['CUPS_SERVER'] = server
         execCups(command, queue, args)
-
-    try:
-        # See if rm is running a cupsd. If not, assume it's an LPRng server.
-        s = socket.socket()
-        s.settimeout(0.3)
-        s.connect((rm, 631))
-        s.close()
-    except (socket.error, socket.timeout):
+    else:
         execLprng(command, queue, args)
-
-    os.environ['CUPS_SERVER'] = rm
-    if preference == 'lprng':
-        args = translate_lprng_args_to_cups(command, args)
-    execCups(command, queue, args)
