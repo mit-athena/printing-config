@@ -15,9 +15,6 @@ DEB_DIVERT_FILES_debathena-printing-config += \
 	/usr/share/man/man1/lpr.debathena.1.gz \
 	/usr/share/man/man1/lprm.debathena.1.gz \
 
-DEB_DIVERT_FILES_debathena-cluster-printing-config += \
-	/etc/cups/client.conf.debathena
-
 DEB_UNDIVERT_FILES_debathena-printing-config += \
 	/usr/bin/cancel.debathena \
 	/usr/sbin/lpc.debathena \
