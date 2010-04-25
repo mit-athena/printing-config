@@ -135,10 +135,10 @@ def find_queue(queue):
         s.settimeout(0.3)
         s.connect((rm, 631))
         s.close()
+
+        return SYSTEM_CUPS, rm, queue
     except (socket.error, socket.timeout):
         return SYSTEM_LPRNG, rm, queue
-
-    return SYSTEM_CUPS, rm, queue
 
 
 __all__ = ['SYSTEM_CUPS', 'SYSTEM_LPRNG',
