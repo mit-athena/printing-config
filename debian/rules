@@ -1,5 +1,7 @@
 #!/usr/bin/make -f
 
+DEB_PYTHON_SYSTEM = pysupport
+
 DEB_DIVERT_EXTENSION = .debathena
 
 DEB_DIVERT_FILES_debathena-printing-config += \
@@ -29,6 +31,10 @@ DEB_UNDIVERT_VERSION_/usr/share/man/man8/lpc.debathena.8.gz = 1.17~
 
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/rules/config-package.mk
+include /usr/share/cdbs/1/class/python-distutils.mk
 
 build/debathena-printing-config::
 	msgfmt -o system-config-printer.mo system-config-printer.po
+
+clean::
+	rm -rf debathena.printing.egg-info
