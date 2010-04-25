@@ -30,8 +30,9 @@ include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/rules/config-package.mk
 include /usr/share/cdbs/1/class/python-distutils.mk
 
-build/debathena-printing-config::
-	msgfmt -o system-config-printer.mo system-config-printer.po
+build/debathena-printing-config:: system-config-printer.mo
+system-config-printer.mo: system-config-printer.po
+	msgfmt -o $@ $<
 
 clean::
-	rm -rf debathena.printing.egg-info
+	rm -rf debathena.printing.egg-info system-config-printer.mo
