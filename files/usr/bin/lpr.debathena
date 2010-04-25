@@ -214,5 +214,10 @@ if __name__ == '__main__':
         if server:
             os.environ['CUPS_SERVER'] = server
         execCups(command, queue, args)
-    else:
+    elif system == printing.SYSTEM_LPRNG:
         execLprng(command, queue, args)
+    else:
+        error(1, """
+Error: the print queue %s uses an unknown printing infrastructure
+
+""" % queue)
