@@ -5,8 +5,7 @@
 # also lp.debathena, lpq.debathena, and lprm.debathena
 #
 # Wrapper script that intelligently determines whether a command was
-# intended for should go to CUPS or LPRng and sends it off in the
-# right direction
+# intended for CUPS or LPRng and sends it off in the right direction
 
 import cups
 import hesiod
