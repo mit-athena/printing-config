@@ -5,8 +5,9 @@ debathena-printing-config (1.20) UNRELEASED; urgency=low
       name of a queue
   * Kill the totally unused debathena-cluster-printing-config package.
   * Do some minor cleanup of the rules file.
+  * Make wrapper scripts work if run with .debathena suffix.
 
- -- Evan Broder <broder@mit.edu>  Sun, 25 Apr 2010 03:46:24 -0400
+ -- Evan Broder <broder@mit.edu>  Tue, 27 Apr 2010 11:11:23 -0400
 
 debathena-printing-config (1.19) unstable; urgency=low
 

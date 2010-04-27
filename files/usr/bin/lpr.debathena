@@ -201,6 +201,9 @@ def translate_lprng_args_to_cups(command, args):
 if __name__ == '__main__':
     # Remove the command name from the arguments when we extract it
     command = os.path.basename(sys.argv.pop(0))
+    # Strip .debathena suffix if it's there
+    if command[-10:] == '.debathena':
+        command = command[:-10]
 
     # Determine if the arguments prefer one version of this command,
     # For instance, "lpr -Zduplex" wants mit-lpr.
