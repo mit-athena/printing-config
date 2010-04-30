@@ -3,7 +3,7 @@
 lp \- print to Athena printers
 .SH SYNOPSIS
 .B lp
-.RB [ \-P printer]
+.RB [ \-d printer]
 [other options] [filename]
 .SH DESCRIPTION
 Debathena supports two printing systems: the traditional LPRng and the
@@ -18,7 +18,7 @@ man page for the LPRng version of lp, or the
 man page for the CUPS version of lp.
 .SH OPTIONS
 .TP
-.BR \-P printer
+.BR \-d printer
 Specifies the printer to use, which determines which lp version to use. If not specified, it will default to the value of the PRINTER environment variable.
 .PP
 All other options are passed on to the final lp command.
