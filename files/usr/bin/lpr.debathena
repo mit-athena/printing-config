@@ -13,22 +13,9 @@ import sys
 from debathena import printing
 
 opts = {
-    printing.SYSTEM_CUPS: {
-        'lp': 'EU:cd:h:mn:o:q:st:H:P:i:',
-        'lpq': 'EU:h:P:al',
-        'lpr': 'EH:U:P:#:hlmo:pqrC:J:T:',
-        'lprm': 'EU:h:P:',
-    },
-    printing.SYSTEM_LPRNG: {
-        'lp': 'ckmprswBGYd:D:f:n:q:t:',
-        'lpq': 'aAlLVcvP:st:D:',
-        'lpr': 'ABblC:D:F:Ghi:kJ:K:#:m:NP:rR:sT:U:Vw:X:YZ:z1:2:3:4:',
-        'lprm': 'aAD:P:VU:',
-    },
+    printing.SYSTEM_CUPS: 'EH:U:P:#:hlmo:pqrC:J:T:',
+    printing.SYSTEM_LPRNG: 'ABblC:D:F:Ghi:kJ:K:#:m:NP:rR:sT:U:Vw:X:YZ:z1:2:3:4:',
 }
-
-def queue_opt(command):
-    return '-P' if command != 'lp' else '-d'
 
 def error(code, message):
     """Exit out with an error
@@ -36,46 +23,40 @@ def error(code, message):
     sys.stderr.write(message)
     sys.exit(code)
 
-def execCups(command, queue, args):
+def execCups(queue, args):
     """Pass the command and arguments on to the CUPS versions of the command
     """
-    new_command = '/usr/bin/cups-%s' % command
-    new_args = [command, '%s%s' % (queue_opt(command), queue)] + args
-    os.execv(new_command, new_args)
+    new_args = ['lpr', '-P%s' % queue] + args
+    os.execv('/usr/bin/cups-lpr', new_args)
 
-def execLprng(command, queue, args):
+def execLprng(queue, args):
     """Pass the command and arguments on to the LPRng versions of the command
     """
-    new_command = '/usr/bin/mit-%s' % command
-    new_args = [command, '%s%s' % (queue_opt(command), queue)] + args
-    os.execv(new_command, new_args)
+    new_args = ['lpr', '-P%s' % queue] + args
+    os.execv('/usr/bin/mit-lpr', new_args)
 
-def translate_lprng_args_to_cups(command, args):
+def translate_lprng_args_to_cups(args):
     # TODO yell at user if/when we decide that these args are deprecated
 
     # If getopt fails, something went very wrong -- _we_ generated this
-    options, realargs = getopt.gnu_getopt(args, opts[printing.SYSTEM_LPRNG][command])
+    options, realargs = getopt.gnu_getopt(args, opts[printing.SYSTEM_LPRNG])
     cupsargs = []
     for (o, a) in options:
-        if o in ('-a') and command == 'lpq':
-            cupsargs += [('-a', a)]
-        elif o in ('-b', '-l') and command == 'lpr':
+        if o in ('-b', '-l'):
             cupsargs += [('-l', a)]
-        elif o in ('-h') and command == 'lpr':
+        elif o in ('-h'):
             cupsargs += [('-h', a)]
-        elif o in ('-J') and command == 'lpr':
+        elif o in ('-J'):
             cupsargs += [('-J', a)]
-        elif o in ('-K', '-#') and command == 'lpr':
+        elif o in ('-K', '-#'):
             cupsargs += [('-#', a)]
         elif o in ('-P'):
             cupsargs += [('-P', a)]
-        elif o in ('-T') and command == 'lpr':
+        elif o in ('-T'):
             cupsargs += [('-T', a)]
-        elif o in ('-U') and command == 'lpr':
+        elif o in ('-U'):
             cupsargs += [('-U', a)]
-        elif o in ('-v') and command == 'lpq':
-            cupsargs += [('-l', a)]
-        elif o in ('-Z') and command == 'lpr':
+        elif o in ('-Z'):
             if a == 'simplex':
                 cupsargs += [('-o', 'sides=one-sided')]
             elif a == 'duplex':
@@ -83,36 +64,24 @@ def translate_lprng_args_to_cups(command, args):
             elif a == 'duplexshort':
                 cupsargs += [('-o', 'sides=two-sided-short-edge')]
             # TODO attempt to deal banner=staff
-        elif o in ('-m') and command == 'lpr':
+        elif o in ('-m'):
             # TODO figure out if CUPS can do mail/zephyr
             pass # Don't warn about this, we probably generated it
         else:
             sys.stderr.write("Warning: option %s%s not converted to CUPS\n"
                              % (o, a))
     joincupsargs = [o + a for o, a in cupsargs] + realargs
-    sys.stderr.write("Using cups-%s %s\n" % (command, ' '.join(joincupsargs)))
+    sys.stderr.write("Using cups-lpr %s\n" % ' '.join(joincupsargs))
     return joincupsargs
 
 def main():
-    # Remove the command name from the arguments when we extract it
-    command = os.path.basename(sys.argv.pop(0))
-    # Strip .debathena suffix if it's there
-    if command[-10:] == '.debathena':
-        command = command[:-10]
-
-    args = sys.argv
-    if command == 'lpr' and 'LPROPT' in os.environ:
+    args = sys.argv[1:]
+    if 'LPROPT' in os.environ:
         args = shlex.split(os.environ['LPROPT']) + args
         # If we leave LPROPT set, LPRng will count the options twice
         del os.environ['LPROPT']
 
-    try:
-        optinfos = [(s, opts[s][command]) for s in printing.SYSTEMS]
-    except KeyError:
-        error(1, ("\n"
-                  "Error: this script was called as %s, when it must be called as\n"
-                  "one of lpr, lpq, lprm, or lp\n"
-                  "\n" % command))
+    optinfos = [(s, opts[s]) for s in printing.SYSTEMS]
 
     queue = printing.get_default_printer()
     argstyle = None
@@ -120,16 +89,15 @@ def main():
         argstyle, options, arguments = printing.parse_args(args, optinfos)
 
         # Find the queue specified in the arguments
-        queue_args, options = printing.extract_opt(options, queue_opt(command))
+        queue_args, options = printing.extract_opt(options, '-P')
         if queue_args:
             # The last queue specified wins
             queue = queue_args[-1][-1]
 
         # Deal with zephyr notifications
-        if command == 'lpr':
-            zephyr_args, options = printing.extract_opt(options, ['-N'])
-            if not zephyr_args and os.environ.get('ATHENA_USER'):
-                options.append(('-m', 'zephyr%' + os.environ['ATHENA_USER']))
+        zephyr_args, options = printing.extract_opt(options, ['-N'])
+        if not zephyr_args and os.environ.get('ATHENA_USER'):
+            options.append(('-m', 'zephyr%' + os.environ['ATHENA_USER']))
 
         # Now that we've sliced up the arguments, put them back
         # together
@@ -149,12 +117,12 @@ def main():
     system, server, queue = printing.find_queue(queue)
     if system == printing.SYSTEM_CUPS:
         if argstyle == printing.SYSTEM_LPRNG:
-            args = translate_lprng_args_to_cups(command, args)
+            args = translate_lprng_args_to_cups(args)
         if server:
             os.environ['CUPS_SERVER'] = server
-        execCups(command, queue, args)
+        execCups(queue, args)
     elif system == printing.SYSTEM_LPRNG:
-        execLprng(command, queue, args)
+        execLprng(queue, args)
     else:
         error(1, ("\n"
                   "Error: the print queue %s uses an unknown printing infrastructure\n"

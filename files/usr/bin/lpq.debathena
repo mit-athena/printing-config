@@ -1,1 +1,105 @@
-lpr.debathena
+#!/usr/bin/python
+
+# lpq.debathena
+#
+# Wrapper script that intelligently determines whether a command was
+# intended for CUPS or LPRng and sends it off in the right direction
+
+import os
+import sys
+
+from debathena import printing
+
+opts = {
+    printing.SYSTEM_CUPS: {
+        'lp': 'EU:cd:h:mn:o:q:st:H:P:i:',
+        'lpq': 'EU:h:P:al',
+        'lprm': 'EU:h:P:',
+    },
+    printing.SYSTEM_LPRNG: {
+        'lp': 'ckmprswBGYd:D:f:n:q:t:',
+        'lpq': 'aAlLVcvP:st:D:',
+        'lprm': 'aAD:P:VU:',
+    },
+}
+
+def queue_opt(command):
+    return '-P' if command != 'lp' else '-d'
+
+def error(code, message):
+    """Exit out with an error
+    """
+    sys.stderr.write(message)
+    sys.exit(code)
+
+def execCups(command, queue, args):
+    """Pass the command and arguments on to the CUPS versions of the command
+    """
+    new_command = '/usr/bin/cups-%s' % command
+    new_args = [command, '%s%s' % (queue_opt(command), queue)] + args
+    os.execv(new_command, new_args)
+
+def execLprng(command, queue, args):
+    """Pass the command and arguments on to the LPRng versions of the command
+    """
+    new_command = '/usr/bin/mit-%s' % command
+    new_args = [command, '%s%s' % (queue_opt(command), queue)] + args
+    os.execv(new_command, new_args)
+
+def main():
+    # Remove the command name from the arguments when we extract it
+    command = os.path.basename(sys.argv.pop(0))
+    # Strip .debathena suffix if it's there
+    if command[-10:] == '.debathena':
+        command = command[:-10]
+
+    args = sys.argv
+
+    try:
+        optinfos = [(s, opts[s][command]) for s in printing.SYSTEMS]
+    except KeyError:
+        error(1, ("\n"
+                  "Error: this script was called as %s, when it must be called as\n"
+                  "one of lpq, lprm, or lp\n"
+                  "\n" % command))
+
+    queue = printing.get_default_printer()
+    argstyle = None
+    try:
+        argstyle, options, arguments = printing.parse_args(args, optinfos)
+
+        # Find the queue specified in the arguments
+        queue_args, options = printing.extract_opt(options, queue_opt(command))
+        if queue_args:
+            # The last queue specified wins
+            queue = queue_args[-1][-1]
+
+        # Now that we've sliced up the arguments, put them back
+        # together
+        args = [o + a for o, a in options] + arguments
+    except ValueError:
+        # parse_args returned None, so we learned nothing. We'll just
+        # go with the default queue
+        pass
+
+    if not queue:
+        # We tried and couldn't figure it out, so not our problem
+        error(2, ("\n"
+                  "No default printer configured. Specify a -P option, or configure a\n"
+                  "default printer via e.g. System | Administration | Printing.\n"
+                  "\n"))
+
+    system, server, queue = printing.find_queue(queue)
+    if system == printing.SYSTEM_CUPS:
+        if server:
+            os.environ['CUPS_SERVER'] = server
+        execCups(command, queue, args)
+    elif system == printing.SYSTEM_LPRNG:
+        execLprng(command, queue, args)
+    else:
+        error(1, ("\n"
+                  "Error: the print queue %s uses an unknown printing infrastructure\n"
+                  "\n" % queue))
+
+if __name__ == '__main__':
+    main()
