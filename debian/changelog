@@ -12,8 +12,10 @@ debathena-printing-config (1.20) UNRELEASED; urgency=low
   * Kill the totally unused debathena-cluster-printing-config package.
   * Do some minor cleanup of the rules file.
   * Make wrapper scripts work if run with .debathena suffix.
+  * Update the manpages to reflect the demise of
+    /etc/debathena-printing.conf.
 
- -- Evan Broder <broder@mit.edu>  Fri, 30 Apr 2010 17:01:42 -0400
+ -- Evan Broder <broder@mit.edu>  Fri, 30 Apr 2010 17:16:18 -0400
 
 debathena-printing-config (1.19) unstable; urgency=low
 
