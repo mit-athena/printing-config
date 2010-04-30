@@ -4,6 +4,7 @@
 import getopt
 import os
 import socket
+import sys
 import urllib
 
 import cups
@@ -47,6 +48,12 @@ def _setup():
             pass
 
         _loaded = True
+
+
+def error(code, message):
+    """Exit out with an error"""
+    sys.stderr.write(message)
+    sys.exit(code)
 
 
 def get_cups_uri(printer):
@@ -238,6 +245,31 @@ def find_queue(queue):
         return SYSTEM_CUPS, rm, queue
     except (socket.error, socket.timeout):
         return SYSTEM_LPRNG, rm, queue
+
+
+def dispatch_command(system, command, args):
+    """Dispatch a command to a printing-system-specific version of command.
+
+    Given a printing system, a command name, and a set of arguments,
+    execute the correct backend command to handle the request.
+
+    This function wraps os.execvp, so it assumes that it can terminate
+    its invoker.
+
+    Args:
+      system: A SYSTEM_* constant from this module
+      command: The non-system-specific printing command being wrapped
+      args: All arguments to pass to the command (excluding a value
+        for argv[0])
+    """
+    if system == SYSTEM_CUPS:
+        prefix = 'cups-'
+    elif system == SYSTEM_LPRNG:
+        prefix = 'mit-'
+    else:
+        printing.error(1, '\nError: Unknown printing infrastructure\n\n')
+
+    os.execvp('%s%s' % (prefix, command), [command] + args)
 
 
 __all__ = ['SYSTEM_CUPS', 'SYSTEM_LPRNG', 'SYSTEMS'

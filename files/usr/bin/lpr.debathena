@@ -17,24 +17,6 @@ opts = {
     printing.SYSTEM_LPRNG: 'ABblC:D:F:Ghi:kJ:K:#:m:NP:rR:sT:U:Vw:X:YZ:z1:2:3:4:',
 }
 
-def error(code, message):
-    """Exit out with an error
-    """
-    sys.stderr.write(message)
-    sys.exit(code)
-
-def execCups(queue, args):
-    """Pass the command and arguments on to the CUPS versions of the command
-    """
-    new_args = ['lpr', '-P%s' % queue] + args
-    os.execv('/usr/bin/cups-lpr', new_args)
-
-def execLprng(queue, args):
-    """Pass the command and arguments on to the LPRng versions of the command
-    """
-    new_args = ['lpr', '-P%s' % queue] + args
-    os.execv('/usr/bin/mit-lpr', new_args)
-
 def translate_lprng_args_to_cups(args):
     # TODO yell at user if/when we decide that these args are deprecated
 
@@ -109,24 +91,20 @@ def main():
 
     if not queue:
         # We tried and couldn't figure it out, so not our problem
-        error(2, ("\n"
-                  "No default printer configured. Specify a -P option, or configure a\n"
-                  "default printer via e.g. System | Administration | Printing.\n"
-                  "\n"))
+        printing.error(2, ("\n"
+                           "No default printer configured. Specify a -P option, or configure a\n"
+                           "default printer via e.g. System | Administration | Printing.\n"
+                           "\n"))
 
     system, server, queue = printing.find_queue(queue)
-    if system == printing.SYSTEM_CUPS:
-        if argstyle == printing.SYSTEM_LPRNG:
-            args = translate_lprng_args_to_cups(args)
-        if server:
-            os.environ['CUPS_SERVER'] = server
-        execCups(queue, args)
-    elif system == printing.SYSTEM_LPRNG:
-        execLprng(queue, args)
-    else:
-        error(1, ("\n"
-                  "Error: the print queue %s uses an unknown printing infrastructure\n"
-                  "\n" % queue))
+
+    args.insert(0, '-P%s' % queue)
+    if server:
+        os.environ['CUPS_SERVER'] = server
+    if system == printing.SYSTEM_CUPS and argstyle == printing.SYSTEM_LPRNG:
+        args = translate_lprng_args_to_cups(args)
+
+    printing.dispatch_command(system, 'lpr', args)
 
 if __name__ == '__main__':
     main()

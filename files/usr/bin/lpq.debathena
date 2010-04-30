@@ -90,16 +90,12 @@ def main():
                   "\n"))
 
     system, server, queue = printing.find_queue(queue)
-    if system == printing.SYSTEM_CUPS:
-        if server:
-            os.environ['CUPS_SERVER'] = server
-        execCups(command, queue, args)
-    elif system == printing.SYSTEM_LPRNG:
-        execLprng(command, queue, args)
-    else:
-        error(1, ("\n"
-                  "Error: the print queue %s uses an unknown printing infrastructure\n"
-                  "\n" % queue))
+
+    args.insert(0, '%s%s' % (queue_opt(command), queue))
+    if server:
+        os.environ['CUPS_SERVER'] = server
+
+    printing.dispatch_command(system, command, args)
 
 if __name__ == '__main__':
     main()
