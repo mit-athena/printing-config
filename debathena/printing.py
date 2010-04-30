@@ -1,6 +1,8 @@
 """Debathena printing configuration"""
 
 
+import getopt
+import os
 import socket
 import urllib
 
@@ -20,6 +22,7 @@ cupsd = None
 
 SYSTEM_CUPS = 0
 SYSTEM_LPRNG = 1
+SYSTEMS = [SYSTEM_CUPS, SYSTEM_LPRNG]
 
 
 def _hesiod_lookup(hes_name, hes_type):
@@ -54,6 +57,91 @@ def get_cups_uri(printer):
             return attrs.get('device-uri')
         except cups.IPPError:
             pass
+
+
+def parse_args(args, optinfos):
+    """Parse an argument list, given multiple ways to parse it.
+
+    The Debathena printing wrapper scripts sometimes have to support
+    multiple, independent argument sets from the different printing
+    systems' versions of commands.
+
+    parse_args tries to parse arguments with a series of different
+    argument specifiers, returning the first parse that succeeds.
+
+    The optinfos argument provides information about the various ways
+    to parse the arguments, including the order in which to attempt
+    the parses. optinfos should be a list of 2-tuples of the form
+    (opt_identifier, optinfo).
+
+    The opt_identifier from the first tuple that successfully parses
+    is included as part of the return value. optinfo is a list of
+    short options in the same format as getopt().
+
+    Args:
+      args: The argv-style argument list to parse
+      optinfos: A list of 2-tuples of the form (opt_identifier,
+        optinfo).
+
+    Returns:
+      A tuple of (opt_identifier, options, arguments), where options
+      and arguments are returned by the first run of getopt that
+      succeeds.
+    """
+
+    for opt_identifier, optinfo in optinfos:
+      try:
+          options, arguments = getopt.gnu_getopt(args, optinfo)
+          return opt_identifier, options, arguments
+      except getopt.GetoptError:
+          # That version doesn't work, so try the next one
+          continue
+
+
+def extract_opt(options, optname):
+    """Finds a particular argument and removes it.
+
+    Useful when you want to find a particular argument, extract_opt
+    looks through a list of options in the format getopt returns
+    them. It finds all instances of optnames and extracts them.
+
+    Args:
+      options: A list of options as returned from getopt (i.e. [('-P',
+        'barbar')])
+      optname: The option to extract. The option should have an
+        opening dash (i.e. '-P')
+
+    Returns:
+      A tuple of (extracted, remaining), where extracted is the list
+      of arguments that matched optname, and remaining is the list of
+      arguments that don't
+    """
+    extracted = []
+    remaining = []
+    for o, v in options:
+        if o == optname:
+            extracted.append((o, v))
+        else:
+            remaining.append((o, v))
+    return extracted, remaining
+
+
+def get_default_printer():
+    """Find and return the default printer"""
+    _setup()
+
+    if 'PRINTER' in os.environ:
+        return os.environ['PRINTER']
+
+    if cupsd:
+        default = cups.getDefault()
+        if default:
+            return default
+
+    for result in _hesiod_lookup(socket.getfqdn(), 'cluster'):
+        key, value = result.split(None, 1)
+        if key == 'lpr':
+            return value
 
 
 def find_queue(queue):
@@ -152,7 +240,10 @@ def find_queue(queue):
         return SYSTEM_LPRNG, rm, queue
 
 
-__all__ = ['SYSTEM_CUPS', 'SYSTEM_LPRNG',
+__all__ = ['SYSTEM_CUPS', 'SYSTEM_LPRNG', 'SYSTEMS'
            'get_cups_uri',
+           'parse_args',
+           'extract_opt',
+           'get_default_printer',
            'find_queue',
            ]
