@@ -2,71 +2,32 @@
 
 # lpr.debathena
 #
-# also lp.debathena, lpq.debathena, and lprm.debathena
-#
 # Wrapper script that intelligently determines whether a command was
 # intended for CUPS or LPRng and sends it off in the right direction
 
-import cups
-import hesiod
-import getopt
 import os
 import shlex
-import socket
 import sys
-from subprocess import call, PIPE
 
 from debathena import printing
 
-try:
-    cupsd = cups.Connection()
-except RuntimeError: # Is this actually safer than "except:"?
-    cupsd = None
-
-def hesiod_lookup(hes_name, hes_type):
-    """A wrapper with somewhat graceful error handling."""
-    try:
-        h = hesiod.Lookup(hes_name, hes_type)
-        if len(h.results) > 0:
-            return h.results
-    except IOError:
-        return []
-
-def lpropt_transform(args):
-    if 'LPROPT' in os.environ:
-        return shlex.split(os.environ['LPROPT']) + args
-    return args
-
-def zephyr_transform(options):
-    zephyr = True
-    return_options = []
-    for o, a in options:
-        if o == '-N':
-            zephyr = False
-        else:
-            return_options.append((o, a))
-
-    if zephyr and os.environ.get('ATHENA_USER'):
-        return_options.append(('-m', 'zephyr%' + os.environ['ATHENA_USER']))
-
-    return return_options
-
 opts = {
-    'cups': {
-        'lp': ('EU:cd:h:mn:o:q:st:H:P:i:', None, '-d'),
-        'lpq': ('EU:h:P:al', None, '-P'),
-        'lpr': ('EH:U:P:#:hlmo:pqrC:J:T:', 
-            (lpropt_transform, zephyr_transform), '-P'),
-        'lprm': ('EU:h:P:', None, '-P'),
+    printing.SYSTEM_CUPS: {
+        'lp': 'EU:cd:h:mn:o:q:st:H:P:i:',
+        'lpq': 'EU:h:P:al',
+        'lpr': 'EH:U:P:#:hlmo:pqrC:J:T:',
+        'lprm': 'EU:h:P:',
     },
-    'lprng': {
-        'lp': ('ckmprswBGYd:D:f:n:q:t:', None, '-d'),
-        'lpq': ('aAlLVcvP:st:D:', None, '-P'),
-        'lpr': ('ABblC:D:F:Ghi:kJ:K:#:m:NP:rR:sT:U:Vw:X:YZ:z1:2:3:4:',
-            (lpropt_transform, zephyr_transform), '-P'),
-        'lprm': ('aAD:P:VU:', None, '-P'),
-    }
+    printing.SYSTEM_LPRNG: {
+        'lp': 'ckmprswBGYd:D:f:n:q:t:',
+        'lpq': 'aAlLVcvP:st:D:',
+        'lpr': 'ABblC:D:F:Ghi:kJ:K:#:m:NP:rR:sT:U:Vw:X:YZ:z1:2:3:4:',
+        'lprm': 'aAD:P:VU:',
+    },
 }
+
+def queue_opt(command):
+    return '-P' if command != 'lp' else '-d'
 
 def error(code, message):
     """Exit out with an error
@@ -78,87 +39,21 @@ def execCups(command, queue, args):
     """Pass the command and arguments on to the CUPS versions of the command
     """
     new_command = '/usr/bin/cups-%s' % command
-    os.execv(new_command, [command] + args)
+    new_args = [command, '%s%s' % (queue_opt(command), queue)] + args
+    os.execv(new_command, new_args)
 
 def execLprng(command, queue, args):
     """Pass the command and arguments on to the LPRng versions of the command
     """
     new_command = '/usr/bin/mit-%s' % command
-    os.execv(new_command, [command] + args)
-
-def getPrintQueue(command, args):
-    """Given argv, extract the printer name, using knowledge of the possible
-    command line options for both the CUPS and LPRng versions of the command
-    that this script was called as. Also, return whether the command line
-    options imply a particular version of the command.
-    """
-
-    preference = 'cups'
-    for version in ['cups', 'lprng']:
-        try:
-            # Get the set of options that correspond to the command that this
-            # script was invoked as
-            (cmd_opts, transformers, destopt) = opts[version][command]
-            if transformers:
-                (transform_args, transform_opts) = transformers
-            else:
-                transform_args = transform_opts = lambda x: x
-        except KeyError:
-            error(1, """
-Error: this script was called as %s, when it must be called as
-one of lpr, lpq, lprm, or lp
-
-""" % command)
-
-        # Attempt to parse it with the current version of this command
-        targs = transform_args(args)
-        try:
-            options, realargs = getopt.gnu_getopt(targs, cmd_opts)
-        except getopt.GetoptError:
-            # That's the wrong version, so try the next one.
-            continue
-
-        options = transform_opts(options)
-        ttargs = [o + a for o, a in options] + realargs
-        if destopt:
-            for o, a in options:
-                if o == destopt:
-                    return (version, a, ttargs)
-        else:
-            if len(realargs) > 0:
-                return (version, realargs[0], ttargs)
-        # Since we've successfully getopt'd, don't try any other versions,
-        # but do note that we like this version.
-        preference = version
-        break
-
-    # Either we failed to getopt, or nobody told us what printer to use,
-    # so let's use the default printer
-    default = os.getenv('PRINTER')
-    if not default:
-        if cupsd:
-            default = cupsd.getDefault()
-    if not default:
-        h = hesiod_lookup(os.uname()[1], 'cluster')
-        for result in h:
-            (key, value) = result.split(None, 1)
-            if key == 'lpr':
-                default = value
-
-    if default:
-        return (preference, default, args)
-    else:
-        error(2, """
-No default printer configured. Specify a -P option, or configure a
-default printer via e.g. System | Administration | Printing.
-
-""")
+    new_args = [command, '%s%s' % (queue_opt(command), queue)] + args
+    os.execv(new_command, new_args)
 
 def translate_lprng_args_to_cups(command, args):
     # TODO yell at user if/when we decide that these args are deprecated
 
     # If getopt fails, something went very wrong -- _we_ generated this
-    options, realargs = getopt.gnu_getopt(args, opts['lprng'][command][0])
+    options, realargs = getopt.gnu_getopt(args, opts[printing.SYSTEM_LPRNG][command])
     cupsargs = []
     for (o, a) in options:
         if o in ('-a') and command == 'lpq':
@@ -197,21 +92,62 @@ def translate_lprng_args_to_cups(command, args):
     sys.stderr.write("Using cups-%s %s\n" % (command, ' '.join(joincupsargs)))
     return joincupsargs
 
-if __name__ == '__main__':
+def main():
     # Remove the command name from the arguments when we extract it
     command = os.path.basename(sys.argv.pop(0))
     # Strip .debathena suffix if it's there
     if command[-10:] == '.debathena':
         command = command[:-10]
 
-    # Determine if the arguments prefer one version of this command,
-    # For instance, "lpr -Zduplex" wants mit-lpr.
-    preference, queue, args = getPrintQueue(command, sys.argv)
+    args = sys.argv
+    if command == 'lpr' and 'LPROPT' in os.environ:
+        args = shlex.split(os.environ['LPROPT']) + args
+        # If we leave LPROPT set, LPRng will count the options twice
+        del os.environ['LPROPT']
+
+    try:
+        optinfos = [(s, opts[s][command]) for s in printing.SYSTEMS]
+    except KeyError:
+        error(1, ("\n"
+                  "Error: this script was called as %s, when it must be called as\n"
+                  "one of lpr, lpq, lprm, or lp\n"
+                  "\n" % command))
+
+    queue = printing.get_default_printer()
+    argstyle = None
+    try:
+        argstyle, options, arguments = printing.parse_args(args, optinfos)
+
+        # Find the queue specified in the arguments
+        queue_args, options = printing.extract_opt(options, queue_opt(command))
+        if queue_args:
+            # The last queue specified wins
+            queue = queue_args[-1][-1]
+
+        # Deal with zephyr notifications
+        if command == 'lpr':
+            zephyr_args, options = printing.extract_opt(options, ['-N'])
+            if not zephyr_args and os.environ.get('ATHENA_USER'):
+                options.append(('-m', 'zephyr%' + os.environ['ATHENA_USER']))
+
+        # Now that we've sliced up the arguments, put them back
+        # together
+        args = [o + a for o, a in options] + arguments
+    except ValueError:
+        # parse_args returned None, so we learned nothing. We'll just
+        # go with the default queue
+        pass
+
+    if not queue:
+        # We tried and couldn't figure it out, so not our problem
+        error(2, ("\n"
+                  "No default printer configured. Specify a -P option, or configure a\n"
+                  "default printer via e.g. System | Administration | Printing.\n"
+                  "\n"))
 
     system, server, queue = printing.find_queue(queue)
-
     if system == printing.SYSTEM_CUPS:
-        if preference == 'lprng':
+        if argstyle == printing.SYSTEM_LPRNG:
             args = translate_lprng_args_to_cups(command, args)
         if server:
             os.environ['CUPS_SERVER'] = server
@@ -219,7 +155,9 @@ if __name__ == '__main__':
     elif system == printing.SYSTEM_LPRNG:
         execLprng(command, queue, args)
     else:
-        error(1, """
-Error: the print queue %s uses an unknown printing infrastructure
+        error(1, ("\n"
+                  "Error: the print queue %s uses an unknown printing infrastructure\n"
+                  "\n" % queue))
 
-""" % queue)
+if __name__ == '__main__':
+    main()
