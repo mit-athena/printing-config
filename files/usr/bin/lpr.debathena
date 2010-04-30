@@ -5,6 +5,7 @@
 # Wrapper script that intelligently determines whether a command was
 # intended for CUPS or LPRng and sends it off in the right direction
 
+import getopt
 import os
 import shlex
 import sys
