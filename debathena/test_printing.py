@@ -19,7 +19,7 @@ class TestFindQueue(mox.MoxTestBase):
 
         self.mox.StubOutWithMock(printing, 'get_cups_uri')
 
-    def test_local_usb_queue(self):
+    def test_local_mdns_queue(self):
         """Verify that find_queue doesn't interfere with truly local printers."""
         printing.get_cups_uri('foo').AndReturn('dnssd://patience._printer._tcp.local.')
 
