@@ -2,6 +2,8 @@
 """Test suite for debathena.printing"""
 
 
+import unittest
+
 import cups
 import mox
 
