@@ -36,6 +36,8 @@ def main():
     args = sys.argv
 
     try:
+        # printing.SYSTEMS is a canonical order of preference for
+        # printing systems, and order matters to printing.parse_args
         optinfos = [(s, opts[s][command]) for s in printing.SYSTEMS]
     except KeyError:
         printing.error(1, ("\n"

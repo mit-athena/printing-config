@@ -67,7 +67,10 @@ def main():
     queue = printing.get_default_printer()
     argstyle = None
     try:
+        # printing.SYSTEMS is a canonical order of preference for
+        # printing systems, and order matters to printing.parse_args
         optinfos = [(s, opts[s]) for s in printing.SYSTEMS]
+
         argstyle, options, arguments = printing.parse_args(args, optinfos)
 
         # Find the queue specified in the arguments
