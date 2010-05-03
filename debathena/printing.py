@@ -151,6 +151,48 @@ def get_default_printer():
             return value
 
 
+def canonicalize_queue(queue):
+    """Canonicalize local queue names to Athena queue names
+
+    If the passed-in queue name is a local print queue that bounces to
+    an Athena print queue, canonicalize to the Athena print queue.
+
+    If the queue does not exist on the default CUPS server, then
+    assume it is an already-canonicalized Athena queue.
+
+    If the queue refers to a local queue that does not bounce to an
+    Athena queue (such as a local printer), then return None
+
+    Args:
+      The name of either a local or Athena print queue
+
+    Return:
+      The name of the canonicalized Athena queue, or None if the queue
+      does not refer to an Athena queue.
+    """
+    _setup()
+    uri = get_cups_uri(queue)
+    if not uri:
+        return queue
+
+    proto = rest = hostport = path = host = port = None
+    (proto, rest) = urllib.splittype(uri)
+    if rest:
+        (hostport, path) = urllib.splithost(rest)
+    if hostport:
+        (host, port) = urllib.splitport(hostport)
+    if (proto and host and path and
+        proto == 'ipp' and
+        host.lower() in CUPS_FRONTENDS + CUPS_BACKENDS):
+        # Canonicalize the queue name to Athena's, in case someone has
+        # a local printer called something memorable like 'w20' that
+        # points to 'ajax' or something
+        if path[0:10] == '/printers/':
+            return path[10:]
+        elif path[0:9] == '/classes/':
+            return path[9:]
+
+
 def get_hesiod_print_server(queue):
     """Find the print server for a given queue from Hesiod
 
@@ -224,30 +266,12 @@ def find_queue(queue):
 
       printing_system is one of the PRINT_* constants in this module
     """
-    _setup()
-    url = get_cups_uri(queue)
-    if url:
-        proto = rest = hostport = path = host = port = None
-
-        (proto, rest) = urllib.splittype(url)
-        if rest:
-            (hostport, path) = urllib.splithost(rest)
-        if hostport:
-            (host, port) = urllib.splitport(hostport)
-        if (proto and host and path and
-            proto == 'ipp' and
-            host.lower() in CUPS_FRONTENDS + CUPS_BACKENDS):
-            # Canonicalize the queue name to Athena's, in case someone
-            # has a local printer called something memorable like 'w20'
-            # that points to 'ajax' or something
-            if path[0:10] == '/printers/':
-                queue = path[10:]
-            elif path[0:9] == '/classes/':
-                queue = path[9:]
-            else: # we can't parse CUPS' URL, punt to CUPS
-                return SYSTEM_CUPS, None, queue
-        else:
-            return SYSTEM_CUPS, None, queue
+    athena_queue = canonicalize_queue(queue)
+    # If a queue isn't an Athena queue, punt straight to the default
+    # CUPS server
+    if not athena_queue:
+        return SYSTEM_CUPS, None, queue
+    queue = athena_queue
 
     # Get rid of any instance on the queue name
     # TODO The purpose of instances is to have different sets of default
@@ -304,6 +328,7 @@ __all__ = ['SYSTEM_CUPS', 'SYSTEM_LPRNG', 'SYSTEMS'
            'parse_args',
            'extract_opt',
            'get_default_printer',
+           'canonicalize_queue',
            'get_hesiod_print_server',
            'is_cups_server',
            'find_queue',
