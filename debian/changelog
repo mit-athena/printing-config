@@ -9,6 +9,8 @@ debathena-printing-config (1.20) UNRELEASED; urgency=low
       name of a queue
     - Parsing and filtering arguments in common ways.
     - Actually dispatching commands between CUPS and LPRng.
+  * Add a test suite for debathena.printing and run it during package
+    builds.
   * Kill the totally unused debathena-cluster-printing-config package.
   * Do some minor cleanup of the rules file.
   * Make wrapper scripts work if run with .debathena suffix.
@@ -17,7 +19,7 @@ debathena-printing-config (1.20) UNRELEASED; urgency=low
   * Update lp(1) to use the correct argument for specifying a printer.
   * Restore classic behavior of zephyring on job completion by default.
 
- -- Evan Broder <broder@mit.edu>  Mon, 03 May 2010 16:35:11 -0400
+ -- Evan Broder <broder@mit.edu>  Mon, 03 May 2010 16:55:05 -0400
 
 debathena-printing-config (1.19) unstable; urgency=low
 

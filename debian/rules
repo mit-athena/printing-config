@@ -34,5 +34,15 @@ build/debathena-printing-config:: system-config-printer.mo
 system-config-printer.mo: system-config-printer.po
 	msgfmt -o $@ $<
 
+ifeq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
+common-build-arch common-build-indep:: $(addprefix python-check-stamp-, $(cdbs_python_build_versions))
+python-check-stamp-%: python-build-stamp-%
+	$(call cdbs_python_binary,python$(cdbs_python_compile_version)) setup.py nosetests
+	touch $@
+
+clean::
+	rm -rf python-check-stamp-* mox-*.egg .coverage
+endif
+
 clean::
 	rm -rf debathena.printing.egg-info system-config-printer.mo
