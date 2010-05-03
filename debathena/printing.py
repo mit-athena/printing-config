@@ -239,7 +239,7 @@ def is_cups_server(rm):
     """
     try:
         s = socket.socket()
-        s.settimeout(0, 3)
+        s.settimeout(0.3)
         s.connect((rm, 631))
         s.close()
 
