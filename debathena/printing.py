@@ -151,6 +151,43 @@ def get_default_printer():
             return value
 
 
+def get_hesiod_print_server(queue):
+    """Find the print server for a given queue from Hesiod
+
+    Args:
+      The name of an Athena print queue
+
+    Returns:
+      The print server the queue is served by, or None if the queue
+      does not exist
+    """
+    pcap = _hesiod_lookup(queue, 'pcap')
+    if pcap:
+        for field in pcap[0].split(':'):
+            if field[0:3] == 'rm=':
+                return field[3:]
+
+
+def is_cups_server(rm):
+    """See if a host is accepting connections on port 631.
+
+    Args:
+      A hostname
+
+    Returns:
+      True if the server is accepting connections, otherwise False
+    """
+    try:
+        s = socket.socket()
+        s.settimeout(0, 3)
+        s.connect((rm, 631))
+        s.close()
+
+        return True
+    except (socket.error, socket.timeout):
+        return False
+
+
 def find_queue(queue):
     """Figure out which printing system to use for a given printer
 
@@ -224,26 +261,16 @@ def find_queue(queue):
     # Figure out what Athena thinks the backend server is, and whether
     # that server is running a cupsd; if not, fall back to LPRng
 
-    pcap = _hesiod_lookup(queue, 'pcap')
-    rm = None
-    if pcap:
-        for field in pcap[0].split(':'):
-            if field[0:3] == 'rm=':
-                rm = field[3:]
+    rm = get_hesiod_print_server(queue)
     if not rm:
         # In the unlikely event we're wrong about it being an Athena
         # print queue, the local cupsd is good enough
         return SYSTEM_CUPS, None, queue
 
-    try:
-        # See if rm is running a cupsd. If not, assume it's an LPRng server.
-        s = socket.socket()
-        s.settimeout(0.3)
-        s.connect((rm, 631))
-        s.close()
-
+    # See if rm is running a cupsd. If not, assume it's an LPRng server.
+    if is_cups_server(rm):
         return SYSTEM_CUPS, rm, queue
-    except (socket.error, socket.timeout):
+    else:
         return SYSTEM_LPRNG, rm, queue
 
 
@@ -277,5 +304,7 @@ __all__ = ['SYSTEM_CUPS', 'SYSTEM_LPRNG', 'SYSTEMS'
            'parse_args',
            'extract_opt',
            'get_default_printer',
+           'get_hesiod_print_server',
+           'is_cups_server',
            'find_queue',
            ]
