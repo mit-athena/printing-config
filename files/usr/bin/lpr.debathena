@@ -12,10 +12,10 @@ import sys
 
 from debathena import printing
 
-optinfos = (
-    (printing.SYSTEM_CUPS, 'EH:U:P:#:hlmo:pqrC:J:T:'),
-    (printing.SYSTEM_LPRNG, 'ABblC:D:F:Ghi:kJ:K:#:m:NP:rR:sT:U:Vw:X:YZ:z1:2:3:4:'),
-)
+opts = {
+    printing.SYSTEM_CUPS: 'EH:U:P:#:hlmo:pqrC:J:T:',
+    printing.SYSTEM_LPRNG: 'ABblC:D:F:Ghi:kJ:K:#:m:NP:rR:sT:U:Vw:X:YZ:z1:2:3:4:',
+}
 
 def translate_lprng_args_to_cups(args):
     # TODO yell at user if/when we decide that these args are deprecated
@@ -66,13 +66,14 @@ def main():
     queue = printing.get_default_printer()
     argstyle = None
     try:
+        optinfos = [(s, opts[s]) for s in printing.SYSTEMS]
         argstyle, options, arguments = printing.parse_args(args, optinfos)
 
         # Find the queue specified in the arguments
         queue, options = printing.extract_last_opt(options, '-P')
 
         # Deal with zephyr notifications
-        zephyr_args, options = printing.extract_opt(options, ['-N'])
+        zephyr_args, options = printing.extract_opt(options, '-N')
         if not zephyr_args and os.environ.get('ATHENA_USER'):
             options.append(('-m', 'zephyr%' + os.environ['ATHENA_USER']))
 
