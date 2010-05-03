@@ -133,6 +133,24 @@ def extract_opt(options, optname):
     return extracted, remaining
 
 
+def extract_last_opt(options, optname):
+    """Remove all instances of a particular argument, and return the last one.
+
+    Args:
+      options: A list of options as returned from getopt (i.e. [('-P',
+        'barbar')])
+      optname: The option to extract. The option should have an
+        opening dash (i.e. '-P')
+
+    Returns:
+      A tuple of (last, remaining) where last is the last argument
+      that matched optname, and remaining is the list of arguments
+      that don't
+    """
+    extracted, remaining = extract_opt(options, optname)
+    return extracted[-1][-1], remaining
+
+
 def get_default_printer():
     """Find and return the default printer"""
     _setup()
@@ -327,6 +345,7 @@ __all__ = ['SYSTEM_CUPS', 'SYSTEM_LPRNG', 'SYSTEMS'
            'get_cups_uri',
            'parse_args',
            'extract_opt',
+           'extract_last_opt',
            'get_default_printer',
            'canonicalize_queue',
            'get_hesiod_print_server',

@@ -44,15 +44,11 @@ def main():
                            "\n" % command))
 
     queue = printing.get_default_printer()
-    argstyle = None
     try:
         argstyle, options, arguments = printing.parse_args(args, optinfos)
 
         # Find the queue specified in the arguments
-        queue_args, options = printing.extract_opt(options, queue_opt(command))
-        if queue_args:
-            # The last queue specified wins
-            queue = queue_args[-1][-1]
+        queue, options = printing.extract_last_opt(options, queue_opt(command))
 
         # Now that we've sliced up the arguments, put them back
         # together

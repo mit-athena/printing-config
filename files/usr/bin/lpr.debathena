@@ -12,10 +12,10 @@ import sys
 
 from debathena import printing
 
-opts = {
-    printing.SYSTEM_CUPS: 'EH:U:P:#:hlmo:pqrC:J:T:',
-    printing.SYSTEM_LPRNG: 'ABblC:D:F:Ghi:kJ:K:#:m:NP:rR:sT:U:Vw:X:YZ:z1:2:3:4:',
-}
+optinfos = (
+    (printing.SYSTEM_CUPS, 'EH:U:P:#:hlmo:pqrC:J:T:'),
+    (printing.SYSTEM_LPRNG, 'ABblC:D:F:Ghi:kJ:K:#:m:NP:rR:sT:U:Vw:X:YZ:z1:2:3:4:'),
+)
 
 def translate_lprng_args_to_cups(args):
     # TODO yell at user if/when we decide that these args are deprecated
@@ -63,18 +63,13 @@ def main():
         # If we leave LPROPT set, LPRng will count the options twice
         del os.environ['LPROPT']
 
-    optinfos = [(s, opts[s]) for s in printing.SYSTEMS]
-
     queue = printing.get_default_printer()
     argstyle = None
     try:
         argstyle, options, arguments = printing.parse_args(args, optinfos)
 
         # Find the queue specified in the arguments
-        queue_args, options = printing.extract_opt(options, '-P')
-        if queue_args:
-            # The last queue specified wins
-            queue = queue_args[-1][-1]
+        queue, options = printing.extract_last_opt(options, '-P')
 
         # Deal with zephyr notifications
         zephyr_args, options = printing.extract_opt(options, ['-N'])
