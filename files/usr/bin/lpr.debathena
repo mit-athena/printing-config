@@ -47,8 +47,9 @@ def translate_lprng_args_to_cups(args):
                 cupsargs += [('-o', 'sides=two-sided-short-edge')]
             # TODO attempt to deal banner=staff
         elif o in ('-m'):
-            # TODO figure out if CUPS can do mail/zephyr
-            pass # Don't warn about this, we probably generated it
+            # Intentionally drop any argument to -m; zephyrs always go
+            # to you
+            cupsargs += [('-m', '')]
         else:
             sys.stderr.write("Warning: option %s%s not converted to CUPS\n"
                              % (o, a))
@@ -75,7 +76,10 @@ def main():
         # Deal with zephyr notifications
         zephyr_args, options = printing.extract_opt(options, '-N')
         if not zephyr_args and os.environ.get('ATHENA_USER'):
-            options.append(('-m', 'zephyr%' + os.environ['ATHENA_USER']))
+            if argstyle == printing.SYSTEM_CUPS:
+                options.append(('-m', ''))
+            elif argstyle == printing.SYSTEM_LPRNG:
+                options.append(('-m', 'zephyr%' + os.environ['ATHENA_USER']))
 
         # Now that we've sliced up the arguments, put them back
         # together
@@ -95,6 +99,8 @@ def main():
     system, server, queue = printing.find_queue(queue)
 
     args.insert(0, '-P%s' % queue)
+    if os.environ.get('ATHENA_USER'):
+        args.insert(0, '-U%s' % os.environ['ATHENA_USER'])
     if server:
         os.environ['CUPS_SERVER'] = server
     if system == printing.SYSTEM_CUPS and argstyle == printing.SYSTEM_LPRNG:

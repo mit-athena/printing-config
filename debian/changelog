@@ -15,8 +15,9 @@ debathena-printing-config (1.20) UNRELEASED; urgency=low
   * Update the manpages to reflect the demise of
     /etc/debathena-printing.conf.
   * Update lp(1) to use the correct argument for specifying a printer.
+  * Restore classic behavior of zephyring on job completion by default.
 
- -- Evan Broder <broder@mit.edu>  Fri, 30 Apr 2010 17:17:10 -0400
+ -- Evan Broder <broder@mit.edu>  Mon, 03 May 2010 16:35:11 -0400
 
 debathena-printing-config (1.19) unstable; urgency=low
 
