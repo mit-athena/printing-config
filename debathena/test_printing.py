@@ -41,6 +41,34 @@ class TestHesiodLookup(mox.MoxTestBase):
                          [])
 
 
+class TestParseArgs(mox.MoxTestBase):
+    def setUp(self):
+        super(TestParseArgs, self).setUp()
+
+        self.optinfo = ((printing.SYSTEM_CUPS, 'P:'),
+                        (printing.SYSTEM_LPRNG, 'X:'))
+
+    def test_valid_primary_args(self):
+        """Test parsing arguments with the first set of options"""
+        self.assertEqual(printing.parse_args(['-Pmeadow', 'my_job'], self.optinfo),
+                         (printing.SYSTEM_CUPS, [('-P', 'meadow')], ['my_job']))
+
+    def test_valid_secondary_args(self):
+        """Test parsing arguments with the second set of options"""
+        self.assertEqual(printing.parse_args(['-Xmeadow', 'my_job'], self.optinfo),
+                         (printing.SYSTEM_LPRNG, [('-X', 'meadow')], ['my_job']))
+
+    def test_empty_args(self):
+        """Test parsing an empty argument list"""
+        self.assertEqual(printing.parse_args([], self.optinfo),
+                         (printing.SYSTEM_CUPS, [], []))
+
+    def test_invalid_args(self):
+        """Test parsing an argument list that fails to parse"""
+        self.assertEqual(printing.parse_args(['-wtf'], self.optinfo),
+                         None)
+
+
 class TestCanonicalizeQueue(mox.MoxTestBase):
     def setUp(self):
         super(TestCanonicalizeQueue, self).setUp()
