@@ -49,8 +49,10 @@ def main():
     try:
         argstyle, options, arguments = printing.parse_args(args, optinfos)
 
-        # Find the queue specified in the arguments
-        queue, options = printing.extract_last_opt(options, queue_opt(command))
+        # Find the last queue specified in the arguments
+        queue_args, options = printing.extract_opt(options, queue_opt(command))
+        if queue_args:
+            queue = queue_args[-1][-1]
 
         # Now that we've sliced up the arguments, put them back
         # together

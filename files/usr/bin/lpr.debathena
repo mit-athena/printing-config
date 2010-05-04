@@ -73,8 +73,10 @@ def main():
 
         argstyle, options, arguments = printing.parse_args(args, optinfos)
 
-        # Find the queue specified in the arguments
-        queue, options = printing.extract_last_opt(options, '-P')
+        # Find the last queue specified in the arguments
+        queue_args, options = printing.extract_opt(options, '-P')
+        if queue_args:
+            queue = queue_args[-1][-1]
 
         # Deal with zephyr notifications
         zephyr_args, options = printing.extract_opt(options, '-N')
