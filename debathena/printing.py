@@ -318,7 +318,7 @@ def dispatch_command(system, command, args):
     elif system == SYSTEM_LPRNG:
         prefix = 'mit-'
     else:
-        printing.error(1, '\nError: Unknown printing infrastructure\n\n')
+        error(1, '\nError: Unknown printing infrastructure\n\n')
 
     os.execvp('%s%s' % (prefix, command), [command] + args)
 

@@ -2,6 +2,7 @@
 """Test suite for debathena.printing"""
 
 
+import os
 import unittest
 
 import cups
@@ -124,6 +125,23 @@ class TestCanonicalizeQueue(mox.MoxTestBase):
                          'ajax2')
 
 
+class TestGetHesiodPrintServer(mox.MoxTestBase):
+    def setUp(self):
+        super(TestGetHesiodPrintServer, self).setUp()
+
+    def test_parse_pcap(self):
+        """Test get_hesiod_print_server's ability to parse pcap records"""
+        self.mox.StubOutWithMock(printing, '_hesiod_lookup')
+
+        printing._hesiod_lookup('ajax', 'pcap').AndReturn(
+            ['ajax:rp=ajax:rm=GET-PRINT.MIT.EDU:ka#0:mc#0:'])
+
+        self.mox.ReplayAll()
+
+        self.assertEqual(printing.get_hesiod_print_server('ajax'),
+                         'GET-PRINT.MIT.EDU')
+
+
 class TestFindQueue(mox.MoxTestBase):
     def setUp(self):
         super(TestFindQueue, self).setUp()
@@ -184,6 +202,52 @@ class TestFindQueue(mox.MoxTestBase):
 
         self.assertEqual(printing.find_queue('ajax/2sided'),
                          (printing.SYSTEM_CUPS, 'GET-PRINT.MIT.EDU', 'ajax'))
+
+    def test_canonicalize_queue_confusion(self):
+        """Test that find_queue will bail in case of confusion"""
+        printing.canonicalize_queue('ajax').AndReturn('ajax')
+        printing.get_hesiod_print_server('ajax').AndReturn(None)
+
+        self.mox.ReplayAll()
+
+        self.assertEqual(printing.find_queue('ajax'),
+                         (printing.SYSTEM_CUPS, None, 'ajax'))
+
+
+class TestDispatchCommand(mox.MoxTestBase):
+    def setUp(self):
+        super(TestDispatchCommand, self).setUp()
+
+        self.mox.StubOutWithMock(os, 'execvp')
+
+    def test_dispatch_cups(self):
+        """Test dispatch_command dispatching to CUPS"""
+        os.execvp('cups-lp', ['lp', '-dajax'])
+
+        self.mox.ReplayAll()
+
+        printing.dispatch_command(printing.SYSTEM_CUPS, 'lp', ['-dajax'])
+
+    def test_dispatch_lprng(self):
+        """Test dispatch_command dispatching to LPRng"""
+        os.execvp('mit-lprm', ['lprm', '-Pmeadow', '123'])
+
+        self.mox.ReplayAll()
+
+        printing.dispatch_command(printing.SYSTEM_LPRNG, 'lprm', ['-Pmeadow', '123'])
+
+    def test_dispatch_error(self):
+        """Test that dispatch_command errors out when it doesn't know what to do"""
+        self.mox.StubOutWithMock(printing, 'error')
+        printing.error(1, mox.IgnoreArg()).AndRaise(Exception())
+
+        self.mox.ReplayAll()
+
+        self.assertRaises(Exception,
+                          printing.dispatch_command,
+                          42,
+                          'life',
+                          ['the_universe', 'everything'])
 
 
 if __name__ == '__main__':
