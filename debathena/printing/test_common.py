@@ -16,7 +16,7 @@ class TestHesiodLookup(mox.MoxTestBase):
     def setUp(self):
         super(TestHesiodLookup, self).setUp()
 
-        self.mox.StubOutWithMock(hesiod, 'Lookup')
+        self.mox.StubOutWithMock(hesiod, 'Lookup', use_mock_anything=True)
 
     def test_valid(self):
         """Test _hesiod_lookup on a record that exists"""
