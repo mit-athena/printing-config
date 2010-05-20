@@ -29,4 +29,9 @@ setup(
     tests_require=['mox', 'nose>=0.10'],
     setup_requires=['nose>=0.10'],
     dependency_links=['http://code.google.com/p/pymox/downloads/list'],
+    entry_points={
+        'console_scripts': [
+            'lpr.debathena = debathena.printing.lpr:main',
+            ],
+        },
 )

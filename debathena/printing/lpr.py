@@ -1,9 +1,10 @@
 #!/usr/bin/python
+"""Debathena lpr wrapper script.
 
-# lpr.debathena
-#
-# Wrapper script that intelligently determines whether a command was
-# intended for CUPS or LPRng and sends it off in the right direction
+A script that intelligently determines whether a command was intended
+for CUPS or LPRng and sends it off in the right direction
+"""
+
 
 import getopt
 import os
@@ -12,10 +13,12 @@ import sys
 
 from debathena.printing import common
 
+
 opts = {
     common.SYSTEM_CUPS: 'EH:U:P:#:hlmo:pqrC:J:T:',
     common.SYSTEM_LPRNG: 'ABblC:D:F:Ghi:kJ:K:#:m:NP:rR:sT:U:Vw:X:YZ:z1:2:3:4:',
 }
+
 
 def translate_lprng_args_to_cups(args):
     # TODO yell at user if/when we decide that these args are deprecated
@@ -57,8 +60,9 @@ def translate_lprng_args_to_cups(args):
     sys.stderr.write("Using cups-lpr %s\n" % ' '.join(joincupsargs))
     return joincupsargs
 
-def main():
-    args = sys.argv[1:]
+
+def _main(args):
+    args.pop(0)
     if 'LPROPT' in os.environ:
         args = shlex.split(os.environ['LPROPT']) + args
         # If we leave LPROPT set, LPRng will count the options twice
@@ -112,6 +116,11 @@ def main():
         args = translate_lprng_args_to_cups(args)
 
     common.dispatch_command(system, 'lpr', args)
+
+
+def main():
+    sys.exit(_main(sys.argv))
+
 
 if __name__ == '__main__':
     main()
