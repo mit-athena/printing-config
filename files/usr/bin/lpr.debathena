@@ -10,18 +10,18 @@ import os
 import shlex
 import sys
 
-from debathena import printing
+from debathena.printing import common
 
 opts = {
-    printing.SYSTEM_CUPS: 'EH:U:P:#:hlmo:pqrC:J:T:',
-    printing.SYSTEM_LPRNG: 'ABblC:D:F:Ghi:kJ:K:#:m:NP:rR:sT:U:Vw:X:YZ:z1:2:3:4:',
+    common.SYSTEM_CUPS: 'EH:U:P:#:hlmo:pqrC:J:T:',
+    common.SYSTEM_LPRNG: 'ABblC:D:F:Ghi:kJ:K:#:m:NP:rR:sT:U:Vw:X:YZ:z1:2:3:4:',
 }
 
 def translate_lprng_args_to_cups(args):
     # TODO yell at user if/when we decide that these args are deprecated
 
     # If getopt fails, something went very wrong -- _we_ generated this
-    options, realargs = getopt.gnu_getopt(args, opts[printing.SYSTEM_LPRNG])
+    options, realargs = getopt.gnu_getopt(args, opts[common.SYSTEM_LPRNG])
     cupsargs = []
     for (o, a) in options:
         if o in ('-b', '-l'):
@@ -64,26 +64,26 @@ def main():
         # If we leave LPROPT set, LPRng will count the options twice
         del os.environ['LPROPT']
 
-    queue = printing.get_default_printer()
+    queue = common.get_default_printer()
     argstyle = None
     try:
-        # printing.SYSTEMS is a canonical order of preference for
-        # printing systems, and order matters to printing.parse_args
-        optinfos = [(s, opts[s]) for s in printing.SYSTEMS]
+        # common.SYSTEMS is a canonical order of preference for
+        # printing systems, and order matters to common.parse_args
+        optinfos = [(s, opts[s]) for s in common.SYSTEMS]
 
-        argstyle, options, arguments = printing.parse_args(args, optinfos)
+        argstyle, options, arguments = common.parse_args(args, optinfos)
 
         # Find the last queue specified in the arguments
-        queue_args, options = printing.extract_opt(options, '-P')
+        queue_args, options = common.extract_opt(options, '-P')
         if queue_args:
             queue = queue_args[-1][-1]
 
         # Deal with zephyr notifications
-        zephyr_args, options = printing.extract_opt(options, '-N')
+        zephyr_args, options = common.extract_opt(options, '-N')
         if not zephyr_args and os.environ.get('ATHENA_USER'):
-            if argstyle == printing.SYSTEM_CUPS:
+            if argstyle == common.SYSTEM_CUPS:
                 options.append(('-m', ''))
-            elif argstyle == printing.SYSTEM_LPRNG:
+            elif argstyle == common.SYSTEM_LPRNG:
                 options.append(('-m', 'zephyr%' + os.environ['ATHENA_USER']))
 
         # Now that we've sliced up the arguments, put them back
@@ -96,22 +96,22 @@ def main():
 
     if not queue:
         # We tried and couldn't figure it out, so not our problem
-        printing.error(2, ("\n"
-                           "No default printer configured. Specify a -P option, or configure a\n"
-                           "default printer via e.g. System | Administration | Printing.\n"
-                           "\n"))
+        common.error(2, ("\n"
+                         "No default printer configured. Specify a -P option, or configure a\n"
+                         "default printer via e.g. System | Administration | Printing.\n"
+                         "\n"))
 
-    system, server, queue = printing.find_queue(queue)
+    system, server, queue = common.find_queue(queue)
 
     args.insert(0, '-P%s' % queue)
     if os.environ.get('ATHENA_USER'):
         args.insert(0, '-U%s' % os.environ['ATHENA_USER'])
     if server:
         os.environ['CUPS_SERVER'] = server
-    if system == printing.SYSTEM_CUPS and argstyle == printing.SYSTEM_LPRNG:
+    if system == common.SYSTEM_CUPS and argstyle == common.SYSTEM_LPRNG:
         args = translate_lprng_args_to_cups(args)
 
-    printing.dispatch_command(system, 'lpr', args)
+    common.dispatch_command(system, 'lpr', args)
 
 if __name__ == '__main__':
     main()

@@ -8,15 +8,15 @@
 import os
 import sys
 
-from debathena import printing
+from debathena.printing import common
 
 opts = {
-    printing.SYSTEM_CUPS: {
+    common.SYSTEM_CUPS: {
         'lp': 'EU:cd:h:mn:o:q:st:H:P:i:',
         'lpq': 'EU:h:P:al',
         'lprm': 'EU:h:P:',
     },
-    printing.SYSTEM_LPRNG: {
+    common.SYSTEM_LPRNG: {
         'lp': 'ckmprswBGYd:D:f:n:q:t:',
         'lpq': 'aAlLVcvP:st:D:',
         'lprm': 'aAD:P:VU:',
@@ -36,21 +36,21 @@ def main():
     args = sys.argv
 
     try:
-        # printing.SYSTEMS is a canonical order of preference for
-        # printing systems, and order matters to printing.parse_args
-        optinfos = [(s, opts[s][command]) for s in printing.SYSTEMS]
+        # common.SYSTEMS is a canonical order of preference for
+        # printing systems, and order matters to common.parse_args
+        optinfos = [(s, opts[s][command]) for s in common.SYSTEMS]
     except KeyError:
-        printing.error(1, ("\n"
-                           "Error: this script was called as %s, when it must be called as\n"
-                           "one of lpq, lprm, or lp\n"
-                           "\n" % command))
+        common.error(1, ("\n"
+                         "Error: this script was called as %s, when it must be called as\n"
+                         "one of lpq, lprm, or lp\n"
+                         "\n" % command))
 
-    queue = printing.get_default_printer()
+    queue = common.get_default_printer()
     try:
-        argstyle, options, arguments = printing.parse_args(args, optinfos)
+        argstyle, options, arguments = common.parse_args(args, optinfos)
 
         # Find the last queue specified in the arguments
-        queue_args, options = printing.extract_opt(options, queue_opt(command))
+        queue_args, options = common.extract_opt(options, queue_opt(command))
         if queue_args:
             queue = queue_args[-1][-1]
 
@@ -64,18 +64,18 @@ def main():
 
     if not queue:
         # We tried and couldn't figure it out, so not our problem
-        printing.error(2, ("\n"
-                           "No default printer configured. Specify a %s option, or configure a\n"
-                           "default printer via e.g. System | Administration | Printing.\n"
-                           "\n" % queue_opt(command)))
+        common.error(2, ("\n"
+                         "No default printer configured. Specify a %s option, or configure a\n"
+                         "default printer via e.g. System | Administration | Printing.\n"
+                         "\n" % queue_opt(command)))
 
-    system, server, queue = printing.find_queue(queue)
+    system, server, queue = common.find_queue(queue)
 
     args.insert(0, '%s%s' % (queue_opt(command), queue))
     if server:
         os.environ['CUPS_SERVER'] = server
 
-    printing.dispatch_command(system, command, args)
+    common.dispatch_command(system, command, args)
 
 if __name__ == '__main__':
     main()
