@@ -32,6 +32,9 @@ setup(
     entry_points={
         'console_scripts': [
             'lpr.debathena = debathena.printing.lpr:main',
+            'lpq.debathena = debathena.printing.lpq:main',
+            'lprm.debathena = debathena.printing.lprm:main',
+            'lp.debathena = debathena.printing.lp:main',
             ],
         },
 )
