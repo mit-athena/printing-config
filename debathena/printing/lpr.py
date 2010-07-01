@@ -119,8 +119,8 @@ def _main(args):
 
 
 def main():
-    sys.exit(_main(sys.argv))
+    sys.exit(_main(sys.argv)) # pragma: nocover
 
 
 if __name__ == '__main__':
-    main()
+    main() # pragma: nocover
