@@ -2,6 +2,7 @@
 
 from setuptools import setup, find_packages
 from distutils.extension import Extension
+from os import path
 
 try:
     from debian_bundle.changelog import Changelog
