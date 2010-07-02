@@ -20,8 +20,9 @@ debathena-printing-config (1.20) unstable; urgency=low
   * Restore classic behavior of zephyring on job completion by default.
   * Don't ship symlinks for files we're no longer diverting.
   * Recommend apparmor-config for lpr and lpr.debathena whitelisting.
+  * Bump Debian standards version.
 
- -- Evan Broder <broder@mit.edu>  Sat, 19 Jun 2010 19:14:02 -0400
+ -- Evan Broder <broder@dr-wily.mit.edu>  Thu, 01 Jul 2010 20:20:02 -0400
 
 debathena-printing-config (1.19) unstable; urgency=low
 
