@@ -1,4 +1,4 @@
-debathena-printing-config (1.20) UNRELEASED; urgency=low
+debathena-printing-config (1.20) unstable; urgency=low
 
   [ Jonathan Reed ]
   * Fix package name in maintainer scripts
