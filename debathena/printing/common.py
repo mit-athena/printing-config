@@ -320,6 +320,12 @@ def dispatch_command(system, command, args):
     else:
         error(1, '\nError: Unknown printing infrastructure\n\n')
 
+    if os.environ.get('DEBATHENA_DEBUG'):
+        sys.stderr.write('I: Running CUPS_SERVER=%s %s%s %s\n' %
+                         (os.environ.get('CUPS_SERVER', ''),
+                          prefix,
+                          command,
+                          ' '.join(args)))
     os.execvp('%s%s' % (prefix, command), [command] + args)
 
 

@@ -57,7 +57,6 @@ def translate_lprng_args_to_cups(args):
             sys.stderr.write("Warning: option %s%s not converted to CUPS\n"
                              % (o, a))
     joincupsargs = [o + a for o, a in cupsargs] + realargs
-    sys.stderr.write("Using cups-lpr %s\n" % ' '.join(joincupsargs))
     return joincupsargs
 
 

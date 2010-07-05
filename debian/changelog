@@ -1,3 +1,10 @@
+debathena-printing-config (1.21) unstable; urgency=low
+
+  * If DEBATHENA_DEBUG is set, print the command that's about to be
+    executed.
+
+ -- Evan Broder <broder@mit.edu>  Mon, 05 Jul 2010 14:15:07 -0400
+
 debathena-printing-config (1.20) unstable; urgency=low
 
   [ Jonathan Reed ]
