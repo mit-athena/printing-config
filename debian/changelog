@@ -1,3 +1,11 @@
+debathena-printing-config (1.22) unstable; urgency=low
+
+  * Work around broken cups-lpq interactions between 1.4 servers and
+    older clients, by falling back to LPD manually implemented if the
+    arguments to lpq are trivial (Trac: #652).
+
+ -- Geoffrey Thomas <geofft@mit.edu>  Sat, 14 Aug 2010 15:53:59 -0400
+
 debathena-printing-config (1.21) unstable; urgency=low
 
   * If DEBATHENA_DEBUG is set, print the command that's about to be
