@@ -34,11 +34,11 @@ def cups_version_is_below_1_4():
         version = subprocess.Popen(
                       ["dpkg-query", "-W", "-f", "${Version}",
                        "cups-bsd"], stdout=subprocess.PIPE).communicate()[0]
-        compare = subprocess.Popen(
+        compare = subprocess.call(
                       ["dpkg", "--compare-versions",
                        version,
                        "lt-nl", "1.4"])
-        return compare.wait() == 0
+        return compare == 0
     except OSError:
         # Assume the current version of CUPS is fine
         return False
