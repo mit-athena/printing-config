@@ -141,7 +141,7 @@ def get_default_printer():
         return os.environ['PRINTER']
 
     if cupsd:
-        default = cups.getDefault()
+        default = cupsd.getDefault()
         if default:
             return default
 
