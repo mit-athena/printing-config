@@ -37,13 +37,13 @@ def _hesiod_lookup(hes_name, hes_type):
 
 
 def _setup():
-    global _loaded
+    global _loaded, cupsd
     if not _loaded:
         CUPS_BACKENDS = [s.lower() for s in
                          _hesiod_lookup('cups-print', 'sloc') +
                          _hesiod_lookup('cups-cluster', 'sloc')]
         try:
-            global cupsd = cups.Connection()
+            cupsd = cups.Connection()
         except RuntimeError:
             pass
 
