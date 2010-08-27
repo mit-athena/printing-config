@@ -14,7 +14,7 @@ import hesiod
 _loaded = False
 CUPS_FRONTENDS = [
     'printers.mit.edu',
-    'cluster-printer.mit.edu',
+    'cluster-printers.mit.edu',
     'cups.mit.edu',
     ]
 CUPS_BACKENDS = []
@@ -43,7 +43,7 @@ def _setup():
                          _hesiod_lookup('cups-print', 'sloc') +
                          _hesiod_lookup('cups-cluster', 'sloc')]
         try:
-            cupsd = cups.Connection()
+            global cupsd = cups.Connection()
         except RuntimeError:
             pass
 
