@@ -1,7 +1,7 @@
 debathena-printing-config (1.23.2) unstable; urgency=low
 
   * Test system and argstyle, when adding zephyr args so as not to break
-    LPRng queues
+    LPRng queues (Trac: #710)
   * Modify tests to account for the fact that we're now calling
     common.find_queue twice
 
