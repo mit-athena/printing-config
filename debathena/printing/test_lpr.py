@@ -73,8 +73,11 @@ class TestNonexistantPrinter(TestLpr):
         """Test printing to a printer that is not in Hesiod.
 
         Taken from -c debathena, reported by quentin on May 14, 2010."""
+        # We now call common.find_queue twice
         common._hesiod_lookup('stark', 'pcap').AndReturn([])
+        common.get_cups_uri('stark').AndReturn(None)
         common.get_default_printer().AndReturn(None)
+        common._hesiod_lookup('stark', 'pcap').AndReturn([])
         common.get_cups_uri('stark').AndReturn(None)
 
         # Result:
@@ -93,8 +96,12 @@ class TestLpropt(TestLpr):
         """Test printing with LPROPT set.
 
         Taken from Trac #509, reported on Mar 12, 2010."""
+        # We now call common.find_queue twice
         common._hesiod_lookup('ajax', 'pcap').AndReturn(['ajax:rp=ajax:rm=GET-PRINT.MIT.EDU:ka#0:mc#0:'])
+        common.get_cups_uri('ajax').AndReturn(None)
+        common.is_cups_server('GET-PRINT.MIT.EDU').AndReturn(True)
         common.get_default_printer().AndReturn(None)
+        common._hesiod_lookup('ajax', 'pcap').AndReturn(['ajax:rp=ajax:rm=GET-PRINT.MIT.EDU:ka#0:mc#0:'])
         common.get_cups_uri('ajax').AndReturn(None)
         common.is_cups_server('GET-PRINT.MIT.EDU').AndReturn(True)
 
@@ -114,8 +121,12 @@ class TestNoLpropt(TestLpr):
         """Test printing with LPROPT unset.
 
         Taken from Trac #509, reported on Mar 12, 2010."""
+        # We now call common.find_queue twice
         common._hesiod_lookup('ajax', 'pcap').AndReturn(['ajax:rp=ajax:rm=GET-PRINT.MIT.EDU:ka#0:mc#0:'])
         common.get_default_printer().AndReturn(None)
+        common.get_cups_uri('ajax').AndReturn(None)
+        common.is_cups_server('GET-PRINT.MIT.EDU').AndReturn(True)
+        common._hesiod_lookup('ajax', 'pcap').AndReturn(['ajax:rp=ajax:rm=GET-PRINT.MIT.EDU:ka#0:mc#0:'])
         common.get_cups_uri('ajax').AndReturn(None)
         common.is_cups_server('GET-PRINT.MIT.EDU').AndReturn(True)
 
@@ -126,6 +137,30 @@ class TestNoLpropt(TestLpr):
 
         lpr._main(['lpr', '-P', 'ajax'])
 
+class TestLPRngQueue(TestLpr):
+    environ = {'ATHENA_USER': 'jdreed'}
+    backends = ['get-print.mit.edu']
+
+    def test(self):
+        """Test printing to an LPRng queue
+
+        Ensure we pass zephyr arguments correctly.
+        (because 'lpr -Pfoo' will count as 'CUPS argument style')"""
+        # We call common.find_queue twice
+        common._hesiod_lookup('w20thesis', 'pcap').AndReturn(['w20thesis:rp=w20thesis:rm=IO.MIT.EDU:ka#0:mc#0:auth=kerberos5:xn:'])
+        common.get_default_printer().AndReturn(None)
+        common.get_cups_uri('w20thesis').AndReturn(None)
+        common.is_cups_server('IO.MIT.EDU').AndReturn(False)
+        common._hesiod_lookup('w20thesis', 'pcap').AndReturn(['w20thesis:rp=w20thesis:rm=IO.MIT.EDU:ka#0:mc#0:auth=kerberos5:xn:'])
+        common.get_cups_uri('w20thesis').AndReturn(None)
+        common.is_cups_server('IO.MIT.EDU').AndReturn(False)
+
+        # Result:
+        os.execvp('mit-lpr', ['lpr', '-Ujdreed', '-Pw20thesis', '-mzephyr%jdreed'])
+
+        self.mox.ReplayAll()
+
+        lpr._main(['lpr', '-P', 'w20thesis'])
 
 if __name__ == '__main__':
     unittest.main()

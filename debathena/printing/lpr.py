@@ -85,7 +85,9 @@ def _main(args):
         zephyr_args, options = common.extract_opt(options, '-N')
         if not zephyr_args and os.environ.get('ATHENA_USER'):
             system = common.find_queue(queue)[0]
-            if system == common.SYSTEM_CUPS:
+            if argstyle == common.SYSTEM_LPRNG:
+                options.append(('-m', 'zephyr%' + os.environ['ATHENA_USER']))
+            elif system == common.SYSTEM_CUPS:
                 options.append(('-m', ''))
             elif system == common.SYSTEM_LPRNG:
                 options.append(('-m', 'zephyr%' + os.environ['ATHENA_USER']))
