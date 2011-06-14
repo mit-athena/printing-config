@@ -65,7 +65,7 @@ class TestLpr(mox.MoxTestBase):
         self.mox.StubOutWithMock(os, 'execvp')
 
 
-class TestNonexistantPrinter(TestLpr):
+class TestNonexistentPrinter(TestLpr):
     # LPROPT, PRINTER are unset
     environ = {'ATHENA_USER': 'quentin'}
 
@@ -86,31 +86,6 @@ class TestNonexistantPrinter(TestLpr):
         self.mox.ReplayAll()
 
         lpr._main(['lpr', '-Pstark', 'puppies biting nose.jpg'])
-
-
-class TestLpropt(TestLpr):
-    environ = {'ATHENA_USER': 'jdreed', 'LPROPT': '-Zduplex'}
-    backends = ['get-print.mit.edu']
-
-    def test(self):
-        """Test printing with LPROPT set.
-
-        Taken from Trac #509, reported on Mar 12, 2010."""
-        # We now call common.find_queue twice
-        common._hesiod_lookup('ajax', 'pcap').AndReturn(['ajax:rp=ajax:rm=GET-PRINT.MIT.EDU:ka#0:mc#0:'])
-        common.get_cups_uri('ajax').AndReturn(None)
-        common.is_cups_server('GET-PRINT.MIT.EDU').AndReturn(True)
-        common.get_default_printer().AndReturn(None)
-        common._hesiod_lookup('ajax', 'pcap').AndReturn(['ajax:rp=ajax:rm=GET-PRINT.MIT.EDU:ka#0:mc#0:'])
-        common.get_cups_uri('ajax').AndReturn(None)
-        common.is_cups_server('GET-PRINT.MIT.EDU').AndReturn(True)
-
-        # Result:
-        os.execvp('cups-lpr', ['lpr', '-Ujdreed', '-Pajax', '-osides=two-sided-long-edge', '-m'])
-
-        self.mox.ReplayAll()
-
-        lpr._main(['lpr', '-P', 'ajax'])
 
 
 class TestNoLpropt(TestLpr):

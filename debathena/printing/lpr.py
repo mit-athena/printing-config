@@ -62,10 +62,6 @@ def translate_lprng_args_to_cups(args):
 
 def _main(args):
     args.pop(0)
-    if 'LPROPT' in os.environ:
-        args = shlex.split(os.environ['LPROPT']) + args
-        # If we leave LPROPT set, LPRng will count the options twice
-        del os.environ['LPROPT']
 
     queue = common.get_default_printer()
     argstyle = None
@@ -116,6 +112,9 @@ def _main(args):
         os.environ['CUPS_SERVER'] = server
     if system == common.SYSTEM_CUPS and argstyle == common.SYSTEM_LPRNG:
         args = translate_lprng_args_to_cups(args)
+
+    if system == common.SYSTEM_CUPS and 'LPROPT' in os.environ:
+        sys.stderr.write("Use of the $LPROPT environment variable is deprecated and\nits contents will be ignored.\nSee http://kb.mit.edu/confluence/x/awCxAQ\n")
 
     common.dispatch_command(system, 'lpr', args)
 
