@@ -1,3 +1,9 @@
+debathena-printing-config (1.23.3) unstable; urgency=low
+
+  * Don't barf on unexpected args (Trac #719)
+
+ -- Jonathan Reed <jdreed@mit.edu>  Tue, 14 Jun 2011 15:41:41 -0400
+
 debathena-printing-config (1.23.2) unstable; urgency=low
 
   * Test system and argstyle, when adding zephyr args so as not to break
