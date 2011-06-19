@@ -76,7 +76,7 @@ def _main(args):
     if system == common.SYSTEM_CUPS and args == []:
         # CUPS clients before 1.4 and CUPS servers at least 1.4 don't
         # communicate well about lpq stuff, so just implement RFC 1179 lpq
-        # stuff, so just implement lpq ourselves since that works
+        # ourselves since that works
         if cups_version_is_below_1_4():
             try:
                 s = socket.socket()

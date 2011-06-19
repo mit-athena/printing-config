@@ -1,3 +1,9 @@
+debathena-printing-config (1.23.4) unstable; urgency=low
+
+  * Minor style and grammar fixups
+
+ -- Benjamin Kaduk <kaduk@mit.edu>  Sun, 19 Jun 2011 17:58:50 -0400
+
 debathena-printing-config (1.23.3) unstable; urgency=low
 
   * Don't barf on unexpected args (Trac #719)
