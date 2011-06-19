@@ -70,7 +70,7 @@ def parse_args(args, optinfos):
     """Parse an argument list, given multiple ways to parse it.
 
     The Debathena printing wrapper scripts sometimes have to support
-    multiple, independent, argument sets from the different printing
+    multiple, independent argument sets from the different printing
     systems' versions of commands.
 
     parse_args tries to parse arguments with a series of different
