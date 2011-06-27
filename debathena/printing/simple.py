@@ -10,8 +10,6 @@ the CUPS and LPRng commands.
 
 import os
 import sys
-import string
-import re
 
 from debathena.printing import common
 
@@ -21,17 +19,7 @@ def simple(command, optinfo, queue_opt, args):
 
     queue = common.get_default_printer()
     try:
-        parseresult = common.parse_args(args, optinfo)
-        if parseresult == None:
-            # Don't barf if neither CUPS nor LPRng syntax was valid (and
-            # hence parse_args returns None)
-            # Remove this stupidity when we kill LPRng with fire
-            print "Syntax Error: Incorrect option passed."
-            print "Valid options: " +
-                  string.replace(re.sub(r'([a-zA-Z])', r'-\1 ',
-                                 optinfo[common.SYSTEM_CUPS][1]), ':', '[arg] ')
-            sys.exit(2)
-        argstyle, options, arguments = parseresult
+        argstyle, options, arguments = common.parse_args(args, optinfo)
 
         # Find the last queue specified in the arguments
         queue_args, options = common.extract_opt(options, queue_opt)

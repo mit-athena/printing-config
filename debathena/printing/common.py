@@ -6,6 +6,8 @@ import os
 import socket
 import sys
 import urllib
+import string
+import re
 
 import cups
 import hesiod
@@ -103,6 +105,11 @@ def parse_args(args, optinfos):
       except getopt.GetoptError:
           # That version doesn't work, so try the next one
           continue
+    
+    # If we got this far, they both failed (read: syntax error)
+    error(2, "Syntax Error: Incorrect option passed.  See the man page for more information.\nA common cause is mixing CUPS and LPRng syntax.\nValid options: %s\n" % 
+          (string.replace(re.sub(r'([a-zA-Z])', r'-\1 ',
+                                 optinfos[SYSTEM_CUPS][1]), ':', '[arg] ')))
 
 
 def extract_opt(options, optname):
