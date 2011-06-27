@@ -1,8 +1,12 @@
 debathena-printing-config (1.23.4) unstable; urgency=low
 
+  [ Benjamin Kaduk ]
+  * Minor style fixups
+
+  [ Jonathan Reed ]
   * No, really, don't barf on unexpected args (Trac: #719)
 
- -- Jonathan Reed <jdreed@mit.edu>  Mon, 27 Jun 2011 15:14:20 -0400
+ -- Jonathan Reed <jdreed@mit.edu>  Mon, 27 Jun 2011 15:18:22 -0400
 
 debathena-printing-config (1.23.3) unstable; urgency=low
 
