@@ -5,8 +5,9 @@ debathena-printing-config (1.23.4) unstable; urgency=low
 
   [ Jonathan Reed ]
   * No, really, don't barf on unexpected args (Trac: #719)
+  * Deal with CUPS' lprm's stupid syntax (Trac: #720)
 
- -- Jonathan Reed <jdreed@mit.edu>  Mon, 27 Jun 2011 15:18:22 -0400
+ -- Jonathan Reed <jdreed@mit.edu>  Thu, 30 Jun 2011 21:48:29 -0400
 
 debathena-printing-config (1.23.3) unstable; urgency=low
 

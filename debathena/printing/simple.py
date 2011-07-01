@@ -16,6 +16,15 @@ from debathena.printing import common
 
 def simple(command, optinfo, queue_opt, args):
     args.pop(0)
+    
+    # Sigh.  CUPS' lprm, in its infinite wisdom, accepts '-' as a
+    # specifier for 'all jobs', which doesn't work with any option
+    # parsing code, ever.  However, CUPS does require that it be the
+    # last argument, so check for it, and save it because parse_args
+    # will kill it
+    lprmdash=False
+    if (command == 'lprm') and len(args) and (args[-1] == '-'):
+        lprmdash=True
 
     queue = common.get_default_printer()
     try:
@@ -29,6 +38,7 @@ def simple(command, optinfo, queue_opt, args):
         # Now that we've sliced up the arguments, put them back
         # together
         args = [o + a for o, a in options] + arguments
+
     except ValueError:
         # parse_args returned None, so we learned nothing. We'll just
         # go with the default queue
@@ -46,5 +56,9 @@ def simple(command, optinfo, queue_opt, args):
     args.insert(0, '%s%s' % (queue_opt, queue))
     if server:
         os.environ['CUPS_SERVER'] = server
+
+    # And now add it back (see above)
+    if lprmdash and (system == common.SYSTEM_CUPS):
+        args.append('-')
 
     common.dispatch_command(system, command, args)
