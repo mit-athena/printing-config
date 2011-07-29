@@ -1,3 +1,9 @@
+debathena-printing-config (1.24) unstable; urgency=low
+
+  * Pharos is here.  Whine at the user if they're doing it wrong.
+
+ -- Jonathan Reed <jdreed@mit.edu>  Fri, 29 Jul 2011 11:22:35 -0400
+
 debathena-printing-config (1.23.4) unstable; urgency=low
 
   [ Benjamin Kaduk ]

@@ -73,6 +73,16 @@ def _main(args):
 
     system, server, queue = common.find_queue(queue)
 
+    if server == None and common.get_cups_uri(queue) == None:
+        # if there's no Hesiod server and no local queue, 
+        # tell the user they're wrong
+        # But let it fall through in case the user is doing 
+        # stupid things with -h 
+        sys.stderr.write(("\nWARNING: The print queue '%s' does not appear to exist.\n"
+                         "If you're trying to print to a cluster or dorm printer,\n"
+                         "you should now be using the 'mitprint' queue instead.\n"
+                         "See http://mit.edu/printing/pharos for more information.\n\n" % queue))
+
     if system == common.SYSTEM_CUPS and args == []:
         # CUPS clients before 1.4 and CUPS servers at least 1.4 don't
         # communicate well about lpq stuff, so just implement RFC 1179 lpq
