@@ -79,6 +79,7 @@ class TestNonexistentPrinter(TestLpr):
         common.get_default_printer().AndReturn(None)
         common._hesiod_lookup('stark', 'pcap').AndReturn([])
         common.get_cups_uri('stark').AndReturn(None)
+        common.get_cups_uri('stark').AndReturn(None)
 
         # Result:
         os.execvp('cups-lpr', ['lpr', '-Uquentin', '-Pstark', '-m', 'puppies biting nose.jpg'])
