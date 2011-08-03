@@ -1,3 +1,9 @@
+debathena-printing-config (1.25) unstable; urgency=low
+
+  * Don't trigger the sketchy lpd code for local queues
+
+ -- Jonathan Reed <jdreed@mit.edu>  Wed, 03 Aug 2011 17:24:42 -0400
+
 debathena-printing-config (1.24) unstable; urgency=low
 
   * Pharos is here.  Whine at the user if they're doing it wrong.

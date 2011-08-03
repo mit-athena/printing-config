@@ -83,7 +83,7 @@ def _main(args):
                          "you should now be using the 'mitprint' queue instead.\n"
                          "See http://mit.edu/printing/pharos for more information.\n\n" % queue))
 
-    if system == common.SYSTEM_CUPS and args == []:
+    if server and system == common.SYSTEM_CUPS and args == []:
         # CUPS clients before 1.4 and CUPS servers at least 1.4 don't
         # communicate well about lpq stuff, so just implement RFC 1179 lpq
         # ourselves since that works
