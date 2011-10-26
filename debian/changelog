@@ -1,3 +1,9 @@
+debathena-printing-config (1.26) unstable; urgency=low
+
+  * No change rebuild to pick up config-package-dev 4.13 changes
+
+ -- Jonathan Reed <jdreed@mit.edu>  Wed, 26 Oct 2011 18:30:37 -0400
+
 debathena-printing-config (1.25) unstable; urgency=low
 
   * Don't trigger the sketchy lpd code for local queues
