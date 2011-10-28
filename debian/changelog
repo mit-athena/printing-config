@@ -1,3 +1,10 @@
+debathena-printing-config (1.27) unstable; urgency=low
+
+  * Build-dep on debathena-cups because in Oneiric, python-cups stopped
+    depending on libcups2, causing tests to fail.
+
+ -- Jonathan Reed <jdreed@mit.edu>  Fri, 28 Oct 2011 10:14:52 -0400
+
 debathena-printing-config (1.26) unstable; urgency=low
 
   * No change rebuild to pick up config-package-dev 4.13 changes
