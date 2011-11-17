@@ -32,8 +32,7 @@ def _hesiod_lookup(hes_name, hes_type):
     """A wrapper with somewhat graceful error handling."""
     try:
         h = hesiod.Lookup(hes_name, hes_type)
-        if len(h.results) > 0:
-            return h.results
+        return h.results
     except IOError:
         return []
 
