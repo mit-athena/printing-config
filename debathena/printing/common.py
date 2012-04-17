@@ -100,6 +100,8 @@ def parse_args(args, optinfos):
     for opt_identifier, optinfo in optinfos:
       try:
           options, arguments = getopt.gnu_getopt(args, optinfo)
+          if opt_identifier == SYSTEM_LPRNG:
+              sys.stderr.write("WARNING: You appear to be using LPRng-style arguments (e.g. -Zduplex).\nThese are deprecated and will not be supported in the future.\nFor more information, please see http://kb.mit.edu/confluence/x/HgAABw\n");
           return opt_identifier, options, arguments
       except getopt.GetoptError:
           # That version doesn't work, so try the next one
