@@ -76,6 +76,8 @@ are on campus, this could indicate a bug in Debathena.
 
         lc.acceptJobs(queue)
         lc.enablePrinter(queue)
+        print >>sys.stderr, "Added print queue %s" % (queue)
+        print >>sys.stderr, "Note: This script uses the same PPD/driver as the print server.  Your local\nworkstation may have newer versions or model-specific PPDs or drivers, and\nyou may wish to use 'system-config-printer' or the CUPS administrative tools\nto select a different PPD."
     finally:
         os.unlink(ppd)
 
