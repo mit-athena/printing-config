@@ -8,7 +8,7 @@ import sys
 import urllib
 import string
 import re
-
+import subprocess
 import cups
 import hesiod
 
@@ -153,11 +153,23 @@ def get_default_printer():
         if default:
             return default
 
-    for result in _hesiod_lookup(socket.getfqdn(), 'cluster'):
-        key, value = result.split(None, 1)
-        if key == 'lpr':
-            return value
+    hesprinter = subprocess.Popen("eval $(getcluster -b $(lsb_release -sr)) && echo $LPR", stdout=subprocess.PIPE, shell=True).communicate()[0]
+    if hesprinter:
+        return hesprinter.strip()
 
+
+def is_local(queue):
+    """Determine if a queue is local or not
+
+    Args:
+      The name of a print queue
+
+    Return:
+      True if the queue is defined in whatever the default CUPS
+      daemon is, False otherwise
+    """
+    _setup()
+    return queue in [dest(0) for dest in cupsd.getDests()]
 
 def canonicalize_queue(queue):
     """Canonicalize local queue names to Athena queue names
