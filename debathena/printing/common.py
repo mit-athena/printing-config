@@ -153,9 +153,13 @@ def get_default_printer():
         if default:
             return default
 
-    hesprinter = subprocess.Popen("eval $(getcluster -b $(lsb_release -sr)) && echo $LPR", stdout=subprocess.PIPE, shell=True).communicate()[0]
-    if hesprinter:
-        return hesprinter.strip()
+    clusterinfo = subprocess.Popen("getcluster -p $(lsb_release -sr)",
+                                   stdout=subprocess.PIPE,
+                                   shell=True).communicate()[0]
+    for line in clusterinfo.splitlines():
+        (k,v) = line.split(None, 1)
+        if k == "LPR":
+            return v.strip()
 
 
 def is_local(queue):
