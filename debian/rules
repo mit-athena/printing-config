@@ -21,18 +21,9 @@ DEB_UNDIVERT_FILES_debathena-printing-config += \
 	/usr/share/man/man1/cancel.debathena.1.gz \
 	/usr/share/man/man8/lpc.debathena.8.gz
 
-DEB_UNDIVERT_VERSION_/usr/bin/cancel.debathena = 1.17~
-DEB_UNDIVERT_VERSION_/usr/sbin/lpc.debathena = 1.17~
-DEB_UNDIVERT_VERSION_/usr/share/man/man1/cancel.debathena.1.gz = 1.17~
-DEB_UNDIVERT_VERSION_/usr/share/man/man8/lpc.debathena.8.gz = 1.17~
-
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/rules/config-package.mk
 include /usr/share/cdbs/1/class/python-distutils.mk
-
-build/debathena-printing-config:: system-config-printer.mo
-system-config-printer.mo: system-config-printer.po
-	msgfmt -o $@ $<
 
 ifeq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
 common-build-arch common-build-indep:: $(addprefix python-check-stamp-, $(cdbs_python_build_versions))
@@ -45,4 +36,4 @@ clean::
 endif
 
 clean::
-	rm -rf debathena.printing.egg-info system-config-printer.mo
+	rm -rf debathena.printing.egg-info 

@@ -1,3 +1,13 @@
+debathena-printing-config (1.30) UNRELEASED; urgency=low
+
+  * Remove DEB_UNDIVERT_VERSION, unneeded as of c-p-d 4.12 (and build-dep
+    on 4.12)
+  * Drop our english-to-english translation added in version 1.10 because
+    upstream (https://fedorahosted.org/system-config-printer/ticket/181)
+    fixed this years ago.
+
+ -- Jonathan Reed <jdreed@mit.edu>  Fri, 31 Aug 2012 08:45:20 -0400
+
 debathena-printing-config (1.29) unstable; urgency=low
 
   * Bump debian/compat to 6
