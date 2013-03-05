@@ -7,7 +7,7 @@ Standards-Version: 3.9.0
 
 Package: debathena-printing-config
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}, debathena-cupsys-config, debathena-hesiod-config, debathena-lprng-config, debathena-lprng, cups-bsd | cupsys-bsd, python, python-hesiod, python-cups, python-pkg-resources, debathena-getcluster (>= 10.1.0-0debathena1~)
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}, debathena-cupsys-config, debathena-hesiod-config, cups-bsd | cupsys-bsd, python, python-hesiod, python-cups, python-pkg-resources, debathena-getcluster (>= 10.1.0-0debathena1~)
 Recommends: debathena-apparmor-config
 Provides: ${diverted-files}
 Conflicts: ${diverted-files}
