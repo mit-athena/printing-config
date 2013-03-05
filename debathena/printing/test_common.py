@@ -46,18 +46,20 @@ class TestParseArgs(mox.MoxTestBase):
     def setUp(self):
         super(TestParseArgs, self).setUp()
 
+        # Multiple argument styles can be added here if we ever have any
         self.optinfo = ((common.SYSTEM_CUPS, 'P:'),
-                        (common.SYSTEM_LPRNG, 'X:'))
+                       )
 
     def test_valid_primary_args(self):
         """Test parsing arguments with the first set of options"""
         self.assertEqual(common.parse_args(['-Pmeadow', 'my_job'], self.optinfo),
                          (common.SYSTEM_CUPS, [('-P', 'meadow')], ['my_job']))
 
-    def test_valid_secondary_args(self):
-        """Test parsing arguments with the second set of options"""
-        self.assertEqual(common.parse_args(['-Xmeadow', 'my_job'], self.optinfo),
-                         (common.SYSTEM_LPRNG, [('-X', 'meadow')], ['my_job']))
+    # We no longer have multiple argument parsing styles
+    # def test_valid_secondary_args(self):
+    #     """Test parsing arguments with the second set of options"""
+    #     self.assertEqual(common.parse_args(['-Xmeadow', 'my_job'], self.optinfo),
+    #                      (common.SYSTEM_LPRNG, [('-X', 'meadow')], ['my_job']))
 
     def test_empty_args(self):
         """Test parsing an empty argument list"""
@@ -163,29 +165,31 @@ class TestFindQueue(mox.MoxTestBase):
         """Verify that find_queue can find non-local Athena queues on CUPS"""
         common.canonicalize_queue('ajax').AndReturn('ajax')
         common.get_hesiod_print_server('ajax').AndReturn('GET-PRINT.MIT.EDU')
-        common.is_cups_server('GET-PRINT.MIT.EDU').AndReturn(True)
+        # We no longer call "is_cups_server"
+        # common.is_cups_server('GET-PRINT.MIT.EDU').AndReturn(True)
 
         self.mox.ReplayAll()
 
         self.assertEqual(common.find_queue('ajax'),
                          (common.SYSTEM_CUPS, 'GET-PRINT.MIT.EDU', 'ajax'))
 
-    def test_athena_lprng_queue(self):
-        """Verify that find_queue can find non-local Athena queues on LPRng"""
-        common.canonicalize_queue('ashdown').AndReturn('ashdown')
-        common.get_hesiod_print_server('ashdown').AndReturn('MULCH.MIT.EDU')
-        common.is_cups_server('MULCH.MIT.EDU').AndReturn(False)
+    # def test_athena_lprng_queue(self):
+    #     """Verify that find_queue can find non-local Athena queues on LPRng"""
+    #     common.canonicalize_queue('ashdown').AndReturn('ashdown')
+    #     common.get_hesiod_print_server('ashdown').AndReturn('MULCH.MIT.EDU')
+    #     common.is_cups_server('MULCH.MIT.EDU').AndReturn(False)
 
-        self.mox.ReplayAll()
+    #     self.mox.ReplayAll()
 
-        self.assertEqual(common.find_queue('ashdown'),
-                         (common.SYSTEM_LPRNG, 'MULCH.MIT.EDU', 'ashdown'))
+    #     self.assertEqual(common.find_queue('ashdown'),
+    #                      (common.SYSTEM_LPRNG, 'MULCH.MIT.EDU', 'ashdown'))
 
     def test_misnamed_local_queue(self):
         """Verify that find_queue will use canonicalized queue names"""
         common.canonicalize_queue('w20').AndReturn('ajax')
         common.get_hesiod_print_server('ajax').AndReturn('GET-PRINT.MIT.EDU')
-        common.is_cups_server('GET-PRINT.MIT.EDU').AndReturn(True)
+        # We no longer call "is_cups_server"
+        # common.is_cups_server('GET-PRINT.MIT.EDU').AndReturn(True)
 
         self.mox.ReplayAll()
 
@@ -196,7 +200,8 @@ class TestFindQueue(mox.MoxTestBase):
         """Verify that find_queue will strip instances"""
         common.canonicalize_queue('ajax/2sided').AndReturn('ajax/2sided')
         common.get_hesiod_print_server('ajax').AndReturn('GET-PRINT.MIT.EDU')
-        common.is_cups_server('GET-PRINT.MIT.EDU').AndReturn(True)
+        # We no longer call "is_cups_server"
+        # common.is_cups_server('GET-PRINT.MIT.EDU').AndReturn(True)
 
         self.mox.ReplayAll()
 
@@ -228,13 +233,13 @@ class TestDispatchCommand(mox.MoxTestBase):
 
         common.dispatch_command(common.SYSTEM_CUPS, 'lp', ['-dajax'])
 
-    def test_dispatch_lprng(self):
-        """Test dispatch_command dispatching to LPRng"""
-        os.execvp('mit-lprm', ['lprm', '-Pmeadow', '123'])
+    # def test_dispatch_lprng(self):
+    #     """Test dispatch_command dispatching to LPRng"""
+    #     os.execvp('rlprm', ['lprm', '-Pbw', '123'])
 
-        self.mox.ReplayAll()
+    #     self.mox.ReplayAll()
 
-        common.dispatch_command(common.SYSTEM_LPRNG, 'lprm', ['-Pmeadow', '123'])
+    #     common.dispatch_command(common.SYSTEM_LPRNG, 'lprm', ['-Pbw', '123'])
 
     def test_dispatch_error(self):
         """Test that dispatch_command errors out when it doesn't know what to do"""

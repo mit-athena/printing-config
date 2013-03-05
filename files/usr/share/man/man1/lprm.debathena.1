@@ -1,4 +1,4 @@
-.TH lprm 1 Debathena "November 2009" "Athena Printing"
+.TH lprm 1 Debathena "March 2013" "Athena Printing"
 .SH NAME
 lprm \- remove jobs from Athena printers
 .SH SYNOPSIS
@@ -6,14 +6,16 @@ lprm \- remove jobs from Athena printers
 .RB [ \-P printer]
 [other options]
 .SH DESCRIPTION
-Debathena supports two printing systems: the traditional LPRng and the
-newer CUPS with better cross-platform support. This command is a script
-which detects if you are printing to an LPRng or CUPS print queue and runs
-the appropriate version of lprm.
+This wrapper provides support for Hesiod and MIT's load-balancing
+environment in order to execute the cups-lprm(1) command with the correct
+environment and arguments.
+
+This wrapper no longer has support for LPRng or traditional LPD queues.
+To remove jobs from an LPD printer, you should ask your workstation
+administrator to add it as a local print queue, or use the rlprm(1)
+program.
 .PP
 See the
-.BR mit-lprm (1)
-man page for the LPRng version of lprm, or the
 .BR cups-lprm (1)
 man page for the CUPS version of lprm.
 .SH OPTIONS
@@ -24,6 +26,8 @@ Specifies the printer to use, which determines which lprm version to use. If not
 All other options are passed on to the final lprm command.
 .SH AUTHOR
 Evan Broder, SIPB Debathena <debathena@mit.edu>.
+.br
+Jonathan Reed, Massachusetts Institute of Technology
 .SH SEE ALSO
-.BR mit-lprm (1),
+.BR rlprm (1),
 .BR cups-lprm (1)

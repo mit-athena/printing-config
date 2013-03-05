@@ -1,4 +1,4 @@
-.TH lpr 1 Debathena "November 2009" "Athena Printing"
+.TH lpr 1 Debathena "March 2013" "Athena Printing"
 .SH NAME
 lpr \- print to Athena printers
 .SH SYNOPSIS
@@ -6,14 +6,16 @@ lpr \- print to Athena printers
 .RB [ \-P printer]
 [other options] [filename]
 .SH DESCRIPTION
-Debathena supports two printing systems: the traditional LPRng and the
-newer CUPS with better cross-platform support. This command is a script
-which detects if you are printing to an LPRng or CUPS print queue and runs
-the appropriate version of lpr.
+This wrapper provides support for Hesiod and MIT's load-balancing
+environment in order to execute the cups-lpr(1) command with the correct
+environment and arguments.
+
+This wrapper no longer has support for LPRng or traditional LPD queues.
+To print to an LPD printer, you should ask your workstation
+administrator to add it as a local print queue, or use the rlpr(1)
+program.
 .PP
 See the
-.BR mit-lpr (1)
-man page for the LPRng version of lpr, or the
 .BR cups-lpr (1)
 man page for the CUPS version of lpr.
 .PP
@@ -34,6 +36,8 @@ Specifies the printer to use, which determines which lpr version to use. If not 
 All other options are passed on to the final lpr command.
 .SH AUTHOR
 Evan Broder, SIPB Debathena <debathena@mit.edu>.
+.br
+Jonathan Reed, Massachusetts Institute of Technology
 .SH SEE ALSO
-.BR mit-lpr (1),
+.BR rlpr (1),
 .BR cups-lpr (1)

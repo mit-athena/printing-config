@@ -1,4 +1,4 @@
-.TH lpq 1 Debathena "November 2009" "Athena Printing"
+.TH lpq 1 Debathena "March 2013" "Athena Printing"
 .SH NAME
 lpq \- show Athena printer queue status
 .SH SYNOPSIS
@@ -6,14 +6,16 @@ lpq \- show Athena printer queue status
 .RB [ \-P printer]
 [other options]
 .SH DESCRIPTION
-Debathena supports two printing systems: the traditional LPRng and the
-newer CUPS with better cross-platform support. This command is a script
-which detects if you are printing to an LPRng or CUPS print queue and runs
-the appropriate version of lpq.
+This wrapper provides support for Hesiod and MIT's load-balancing
+environment in order to execute the cups-lpq(1) command with the correct
+environment and arguments.
+
+This wrapper no longer has support for LPRng or traditional LPD queues.
+To query an LPD printer, you should ask your workstation
+administrator to add it as a local print queue, or use the rlpq(1)
+program.
 .PP
 See the
-.BR mit-lpq (1)
-man page for the LPRng version of lpq, or the
 .BR cups-lpq (1)
 man page for the CUPS version of lpq.
 .SH OPTIONS
@@ -24,6 +26,8 @@ Specifies the printer to use, which determines which lpq version to use. If not 
 All other options are passed on to the final lpq command.
 .SH AUTHOR
 Evan Broder, SIPB Debathena <debathena@mit.edu>.
+.br
+Jonathan Reed, Massachusetts Institute of Technology
 .SH SEE ALSO
-.BR mit-lpq (1),
+.BR rlpq(1),
 .BR cups-lpq (1)

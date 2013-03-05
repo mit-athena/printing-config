@@ -17,7 +17,6 @@ from debathena.printing import simple
 
 opts = (
     (common.SYSTEM_CUPS, 'EU:h:P:al'),
-    (common.SYSTEM_LPRNG, 'aAlLVcvP:st:D:'),
 )
 
 

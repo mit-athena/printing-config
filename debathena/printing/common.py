@@ -23,8 +23,10 @@ cupsd = None
 
 
 SYSTEM_CUPS = 0
-SYSTEM_LPRNG = 1
-SYSTEMS = [SYSTEM_CUPS, SYSTEM_LPRNG]
+# If in the future we decide we hate ourselves enough to have a second print
+# subsystem, we would specify it here, and add it to the SYSTEMS list.
+# e.g. SYSTEM_LPRNG = 1
+SYSTEMS = [SYSTEM_CUPS]
 
 
 def _hesiod_lookup(hes_name, hes_type):
@@ -99,15 +101,13 @@ def parse_args(args, optinfos):
     for opt_identifier, optinfo in optinfos:
       try:
           options, arguments = getopt.gnu_getopt(args, optinfo)
-          if opt_identifier == SYSTEM_LPRNG:
-              sys.stderr.write("WARNING: You appear to be using LPRng-style arguments (e.g. -Zduplex).\nThese are deprecated and will not be supported in the future.\nFor more information, please see http://kb.mit.edu/confluence/x/HgAABw\n");
           return opt_identifier, options, arguments
       except getopt.GetoptError:
           # That version doesn't work, so try the next one
           continue
     
     # If we got this far, they both failed (read: syntax error)
-    error(2, "Syntax Error: Incorrect option passed.  See the man page for more information.\nA common cause is mixing CUPS and LPRng syntax.\nValid options: %s\n" % 
+    error(2, "Syntax Error: Incorrect option passed.  See the man page for more information.\nA common cause is using old LPRng syntax.\nValid options: %s\n" % 
           (string.replace(re.sub(r'([a-zA-Z])', r'-\1 ',
                                  optinfos[SYSTEM_CUPS][1]), ':', '[arg] ')))
 
@@ -314,11 +314,9 @@ def find_queue(queue):
         # print queue, the local cupsd is good enough
         return SYSTEM_CUPS, None, queue
 
-    # See if rm is running a cupsd. If not, assume it's an LPRng server.
-    if is_cups_server(rm):
-        return SYSTEM_CUPS, rm, queue
-    else:
-        return SYSTEM_LPRNG, rm, queue
+    # Give up and return rm and queue.  If it's not running a cupsd,
+    # too bad.  It's not our job to check whether cupsd is running.
+    return SYSTEM_CUPS, rm, queue
 
 
 def dispatch_command(system, command, args):
@@ -338,8 +336,6 @@ def dispatch_command(system, command, args):
     """
     if system == SYSTEM_CUPS:
         prefix = 'cups-'
-    elif system == SYSTEM_LPRNG:
-        prefix = 'mit-'
     else:
         error(1, '\nError: Unknown printing infrastructure\n\n')
 
@@ -352,7 +348,7 @@ def dispatch_command(system, command, args):
     os.execvp('%s%s' % (prefix, command), [command] + args)
 
 
-__all__ = ['SYSTEM_CUPS', 'SYSTEM_LPRNG', 'SYSTEMS'
+__all__ = ['SYSTEM_CUPS', 'SYSTEMS'
            'get_cups_uri',
            'parse_args',
            'extract_opt',
