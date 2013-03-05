@@ -17,7 +17,6 @@ _loaded = False
 CUPS_FRONTENDS = [
     'printers.mit.edu',
     'cluster-printers.mit.edu',
-    'cups.mit.edu',
     ]
 CUPS_BACKENDS = []
 cupsd = None
