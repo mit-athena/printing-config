@@ -134,7 +134,7 @@ class TestNoLpropt(TestLpr):
 #         common.is_cups_server('IO.MIT.EDU').AndReturn(False)
 
 #         # Result:
-#         os.execvp('mit-lpr', ['lpr', '-Ujdreed', '-Pw20thesis'])
+#         os.execvp('mit-lpr', ['lpr', '-Ujdreed', '-Pw20thesis', '-mzephyr%jdreed'])
 
 #         self.mox.ReplayAll()
 
