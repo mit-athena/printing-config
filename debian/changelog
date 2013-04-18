@@ -1,8 +1,9 @@
 debathena-printing-config (1.31) unstable; urgency=low
 
   * Add a hack to continue to support Pharos queues.
+  * And recommend rlpr
 
- -- Jonathan Reed <jdreed@mit.edu>  Thu, 18 Apr 2013 13:30:02 -0400
+ -- Jonathan Reed <jdreed@mit.edu>  Thu, 18 Apr 2013 13:33:09 -0400
 
 debathena-printing-config (1.30) unstable; urgency=low
 
