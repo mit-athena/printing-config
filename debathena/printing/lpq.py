@@ -86,7 +86,9 @@ def _main(args):
         # CUPS clients before 1.4 and CUPS servers at least 1.4 don't
         # communicate well about lpq stuff, so just implement RFC 1179 lpq
         # ourselves since that works
-        if cups_version_is_below_1_4():
+        # Also, a hack to continue to support "lpq -Pbw" until we have
+        # a better solution for querying the CUPS queue
+        if cups_version_is_below_1_4() or (server == 'PHAROS-PRODP1.MIT.EDU'):
             try:
                 s = socket.socket()
                 s.settimeout(10)
