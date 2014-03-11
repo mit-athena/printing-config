@@ -1,3 +1,9 @@
+debathena-printing-config (1.32) unstable; urgency=low
+
+  * Explicitly depend on CUPS
+
+ -- Victor Vasiliev <vasilvv@mit.edu>  Tue, 11 Mar 2014 11:39:17 -0400
+
 debathena-printing-config (1.31) unstable; urgency=low
 
   * Add a hack to continue to support Pharos queues.
