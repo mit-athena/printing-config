@@ -1,3 +1,10 @@
+debathena-printing-config (1.33) unstable; urgency=low
+
+  * Add git-buildpackage configuration
+  * Set source format to 3.0 (native)
+
+ -- Victor Vasiliev <vasilvv@mit.edu>  Fri, 28 Mar 2014 17:26:49 -0400
+
 debathena-printing-config (1.32) unstable; urgency=low
 
   * Explicitly depend on CUPS
