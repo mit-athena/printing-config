@@ -1,0 +1,6 @@
+#!/usr/bin/perl -p0
+if (m/^gtk-print-backends/m) {
+	s/^gtk-print-backends.*$/gtk-print-backends = file,cups,lpr/m;
+} else {
+	s/$/\ngtk-print-backends = file,cups,lpr/;
+}

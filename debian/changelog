@@ -1,3 +1,11 @@
+debathena-printing-config (1.34) unstable; urgency=low
+
+  * Transform /etc/gtk-3.0/settings.ini to enable the LPR backend
+    (Trac: #1485)
+  * Bump Standards-Version to 3.9.3
+
+ -- Jonathan Reed <jdreed@mit.edu>  Thu, 12 Jun 2014 10:37:22 -0400
+
 debathena-printing-config (1.33) unstable; urgency=low
 
   * Add git-buildpackage configuration
