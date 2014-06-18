@@ -4,8 +4,11 @@ DEB_PYTHON_SYSTEM = pysupport
 
 DEB_DIVERT_EXTENSION = .debathena
 
+# NOTE: This is the opposite of the test below
+ifeq (Ubuntu,$(shell lsb_release -si))
 DEB_TRANSFORM_FILES_debathena-printing-config += \
 	/etc/gtk-3.0/settings.ini.debathena
+endif
 
 DEB_DIVERT_FILES_debathena-printing-config += \
 	/usr/bin/lp.debathena \
@@ -27,6 +30,12 @@ DEB_UNDIVERT_FILES_debathena-printing-config += \
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/rules/config-package.mk
 include /usr/share/cdbs/1/class/python-distutils.mk
+
+# NOTE: This the opposite of the above test.
+ifneq (Ubuntu,$(shell lsb_release -si))
+install/debathena-printing-config::
+	dh_install debian/settings.ini etc/gtk-3.0
+endif
 
 ifeq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
 common-build-arch common-build-indep:: $(addprefix python-check-stamp-, $(cdbs_python_build_versions))
