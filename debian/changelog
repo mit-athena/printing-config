@@ -1,3 +1,10 @@
+debathena-printing-config (1.34.1) unstable; urgency=low
+
+  * Actually transform the gtk 3.0 settings.ini file, by ensuring there
+    are no typos in the rules file or the name of the transform script
+
+ -- Jonathan Reed <jdreed@mit.edu>  Wed, 18 Jun 2014 10:12:14 -0400
+
 debathena-printing-config (1.34) unstable; urgency=low
 
   * Transform /etc/gtk-3.0/settings.ini to enable the LPR backend

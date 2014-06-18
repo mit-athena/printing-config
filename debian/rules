@@ -4,7 +4,7 @@ DEB_PYTHON_SYSTEM = pysupport
 
 DEB_DIVERT_EXTENSION = .debathena
 
-DEB_TRANFORM_FILES_debathena-printing-config += \
+DEB_TRANSFORM_FILES_debathena-printing-config += \
 	/etc/gtk-3.0/settings.ini.debathena
 
 DEB_DIVERT_FILES_debathena-printing-config += \
