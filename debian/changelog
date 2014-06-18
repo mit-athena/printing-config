@@ -1,3 +1,9 @@
+debathena-printing-config (1.34.3) unstable; urgency=low
+
+  * And Build-Depend on lsb-release, since we use it in the rules file
+
+ -- Jonathan Reed <jdreed@mit.edu>  Wed, 18 Jun 2014 14:07:16 -0400
+
 debathena-printing-config (1.34.2) unstable; urgency=low
 
   * Only transform the gtk 3.0 settings.ini file on Ubuntu, since it is
