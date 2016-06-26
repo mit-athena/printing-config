@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 
-DEB_PYTHON_SYSTEM = pysupport
+DEB_PYTHON2_MODULE_PACKAGES = debathena-printing-config
 
 DEB_DIVERT_EXTENSION = .debathena
 
@@ -39,8 +39,8 @@ endif
 
 ifeq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
 common-build-arch common-build-indep:: $(addprefix python-check-stamp-, $(cdbs_python_build_versions))
-python-check-stamp-%: python-build-stamp-%
-	$(call cdbs_python_binary,python$(cdbs_python_compile_version)) setup.py nosetests
+python-check-stamp-%: debian/python-module-stampdir/debathena-printing-config
+	$(call cdbs_python_binary,$*) setup.py nosetests
 	touch $@
 
 clean::

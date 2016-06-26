@@ -2,7 +2,8 @@ Source: debathena-printing-config
 Section: debathena-config/net
 Priority: extra
 Maintainer: Debathena Project <debathena@mit.edu>
-Build-Depends: cdbs (>= 0.4.43), debhelper (>= 5.0.37.2), config-package-dev (>= 4.12~), python-all (>= 2.3.5-11), python-support (>= 0.3.2), gettext, python-setuptools, python-nose, python-hesiod, python-cups, python-debian, python-apt, cups, libgtk-3-0, lsb-release
+Build-Depends: cdbs (>= 0.4.43), debhelper (>= 5.0.37.2), config-package-dev (>= 4.12~), python-all (>= 2.6.6-3~), python2.7, gettext, python-setuptools, python-nose, python-hesiod, python-cups, python-debian, python-apt, cups, libgtk-3-0, lsb-release
+X-Python-Version: 2.7
 Standards-Version: 3.9.3
 
 Package: debathena-printing-config
@@ -11,7 +12,6 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}, debathena-cupsys
 Recommends: debathena-apparmor-config, rlpr
 Provides: ${diverted-files}
 Conflicts: ${diverted-files}
-XB-Python-Version: ${python:Versions}
 Description: Printing configuration for Debathena
  This package configures both graphical and command-line printing in a way that
  is compatible with the traditional Athena printing infrastructure and eases

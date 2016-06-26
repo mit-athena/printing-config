@@ -1,3 +1,9 @@
+debathena-printing-config (1.34.4) unstable; urgency=medium
+
+  * Replace python-support with dh_python2.
+
+ -- Anders Kaseorg <andersk@mit.edu>  Sat, 25 Jun 2016 22:48:43 -0400
+
 debathena-printing-config (1.34.3) unstable; urgency=low
 
   * And Build-Depend on lsb-release, since we use it in the rules file
