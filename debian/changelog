@@ -1,3 +1,10 @@
+debathena-printing-config (1.34.5) UNRELEASED; urgency=medium
+
+  * Fix build for older cdbs versions.  Also break the build for newer
+    cdbs versions.  We’ll convert this to dh soon.
+
+ -- Anders Kaseorg <andersk@mit.edu>  Wed, 29 Jun 2016 00:05:14 -0400
+
 debathena-printing-config (1.34.4) unstable; urgency=medium
 
   * Replace python-support with dh_python2.

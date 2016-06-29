@@ -40,7 +40,7 @@ endif
 ifeq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
 common-build-arch common-build-indep:: $(addprefix python-check-stamp-, $(cdbs_python_build_versions))
 python-check-stamp-%: debian/python-module-stampdir/debathena-printing-config
-	$(call cdbs_python_binary,$*) setup.py nosetests
+	$(call cdbs_python_binary,python$*) setup.py nosetests
 	touch $@
 
 clean::
