@@ -27,6 +27,7 @@ setup(
     maintainer_email=maintainer_email,
     license="MIT",
     packages=find_packages(),
+    namespace_packages=['debathena'],
     tests_require=['mox', 'nose>=0.10'],
     setup_requires=['nose>=0.10'],
     dependency_links=['http://code.google.com/p/pymox/downloads/list'],
