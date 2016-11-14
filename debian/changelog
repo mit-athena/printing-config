@@ -1,3 +1,9 @@
+debathena-printing-config (1.35) unstable; urgency=medium
+
+  * Convert from cdbs to dh.
+
+ -- Anders Kaseorg <andersk@mit.edu>  Sun, 13 Nov 2016 22:14:05 -0500
+
 debathena-printing-config (1.34.6) unstable; urgency=medium
 
   * Properly declare debathena as a namespace package.  (Trac: #1417)

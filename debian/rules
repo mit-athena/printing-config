@@ -1,51 +1,31 @@
 #!/usr/bin/make -f
 
+%:
+	dh $@ --with python2 --with config-package
+
 DEB_PYTHON2_MODULE_PACKAGES = debathena-printing-config
 
 DEB_DIVERT_EXTENSION = .debathena
 
 # NOTE: This is the opposite of the test below
 ifeq (Ubuntu,$(shell lsb_release -si))
-DEB_TRANSFORM_FILES_debathena-printing-config += \
-	/etc/gtk-3.0/settings.ini.debathena
+override_dh_configpackage:
+	dh_configpackage --package=debathena-printing-config \
+	    --transform "/etc/gtk-3.0/settings.ini.debathena debian/transform_settings.ini.debathena"
+	dh_configpackage
 endif
-
-DEB_DIVERT_FILES_debathena-printing-config += \
-	/usr/bin/lp.debathena \
-	/usr/bin/lpq.debathena \
-	/usr/bin/lpr.debathena \
-	/usr/bin/lprm.debathena \
-	\
-	/usr/share/man/man1/lp.debathena.1.gz \
-	/usr/share/man/man1/lpq.debathena.1.gz \
-	/usr/share/man/man1/lpr.debathena.1.gz \
-	/usr/share/man/man1/lprm.debathena.1.gz \
-
-DEB_UNDIVERT_FILES_debathena-printing-config += \
-	/usr/bin/cancel.debathena \
-	/usr/sbin/lpc.debathena \
-	/usr/share/man/man1/cancel.debathena.1.gz \
-	/usr/share/man/man8/lpc.debathena.8.gz
-
-include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/rules/config-package.mk
-include /usr/share/cdbs/1/class/python-distutils.mk
 
 # NOTE: This the opposite of the above test.
 ifneq (Ubuntu,$(shell lsb_release -si))
-install/debathena-printing-config::
-	dh_install debian/settings.ini etc/gtk-3.0
+override_dh_install:
+	dh_install --package=debathena-printing-config debian/settings.ini etc/gtk-3.0
+	dh_install
 endif
 
-ifeq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
-common-build-arch common-build-indep:: $(addprefix python-check-stamp-, $(cdbs_python_build_versions))
-python-check-stamp-%: debian/python-module-stampdir/debathena-printing-config
-	$(call cdbs_python_binary,python$*) setup.py nosetests
-	touch $@
+override_dh_auto_test:
+	python setup.py nosetests
+	dh_auto_test
 
-clean::
-	rm -rf python-check-stamp-* mox-*.egg .coverage
-endif
-
-clean::
-	rm -rf debathena.printing.egg-info 
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -rf .eggs/ *.egg-info/ .coverage

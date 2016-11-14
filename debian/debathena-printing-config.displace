@@ -1,0 +1,9 @@
+/usr/bin/lp.debathena
+/usr/bin/lpq.debathena
+/usr/bin/lpr.debathena
+/usr/bin/lprm.debathena
+
+/usr/share/man/man1/lp.debathena.1.gz
+/usr/share/man/man1/lpq.debathena.1.gz
+/usr/share/man/man1/lpr.debathena.1.gz
+/usr/share/man/man1/lprm.debathena.1.gz
